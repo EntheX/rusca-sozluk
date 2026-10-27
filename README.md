@@ -94,6 +94,8 @@ Morfoloji testleri (`tests/morph.test.ts`): поступил→поступит�
 
 **Yayın:** `main` dalına her gönderimde `.github/workflows/deploy.yml` testleri çalıştırır, `BASE_PATH=/<repo-adı>/` ile derler ve GitHub Pages'e yayınlar. Repo ayarlarında Settings → Pages → Source: **GitHub Actions** seçili olmalı. Yeni sürüm yayınlanınca uygulama bir sonraki açılışta kendini günceller.
 
+**GitHub olmadan yayın (Netlify Drop):** `npm run build` ile `dist/` klasörünü üret (ya da hazır `rusca-sozluk-site.zip`'i aç), https://app.netlify.com/drop adresine sürükle. Ücretsiz Netlify hesabı açınca site kalıcı olur ve `https://<ad>.netlify.app` adresi verilir. Güncellemede yeni klasörü aynı sitenin **Deploys** sekmesine sürükle; adres aynı kaldığı sürece cihazlardaki veri korunur.
+
 ## Klasörler
 
 ```
