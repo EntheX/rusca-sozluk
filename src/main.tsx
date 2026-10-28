@@ -2,6 +2,7 @@ import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { registerSW } from 'virtual:pwa-register'
 import App from './App'
+import './ui/install'
 import { applyThemeMode, readThemeMode } from './ui/SettingsScreen'
 import './index.css'
 

@@ -5,6 +5,7 @@ import { loadMorph } from './morph/loadMorph'
 import { ArchiveScreen, TextView } from './ui/ArchiveScreen'
 import { DictionaryScreen, LemmaDetail } from './ui/DictionaryScreen'
 import { MorphContext, useRoute, type MorphState } from './ui/hooks'
+import { useInstall } from './ui/install'
 import { IconArchive, IconBook, IconChart, IconSettings, IconWrite } from './ui/icons'
 import { SettingsScreen } from './ui/SettingsScreen'
 import { SummaryScreen } from './ui/SummaryScreen'
@@ -22,6 +23,7 @@ export default function App({ offlineReady }: { offlineReady: boolean }) {
   const { parts, query } = useRoute()
   const [ms, setMs] = useState<MorphState>({ status: 'loading' })
   const [seeding, setSeeding] = useState(isDemo())
+  const { canInstall, install } = useInstall()
 
   useEffect(() => {
     loadMorph().then(
@@ -58,6 +60,11 @@ export default function App({ offlineReady }: { offlineReady: boolean }) {
         <header className="topbar">
           <h1>Rusça Sözlüğüm</h1>
           {ms.status === 'loading' && <span className="small-text muted">sözlük yükleniyor…</span>}
+          {ms.status !== 'loading' && canInstall && (
+            <button className="small primary" onClick={install}>
+              Uygulamayı yükle
+            </button>
+          )}
         </header>
         {isDemo() && (
           <div className="demo-banner">
