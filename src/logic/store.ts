@@ -16,6 +16,7 @@ import {
   type UsageRec,
   type UserPodcastRec,
   type AudioRec,
+  type ReviewRec,
 } from '../db'
 import type { AnalyzedToken } from './analyze'
 import { POS_LABELS } from '../morph/tags'
@@ -158,8 +159,9 @@ export async function saveDraft(text: Omit<TextRec, 'id' | 'status' | 'choices'>
 }
 
 export async function deleteText(id: number) {
-  await db.transaction('rw', [db.texts, db.lemmas, db.usages], async () => {
+  await db.transaction('rw', [db.texts, db.lemmas, db.usages, db.reviews], async () => {
     const us = await db.usages.where('textId').equals(id).toArray()
+    await db.reviews.where('textId').equals(id).delete()
     await db.usages.where('textId').equals(id).delete()
     await db.texts.delete(id)
     await recomputeLemmas(us.map((u) => u.lemmaId))
@@ -199,9 +201,10 @@ export interface Backup {
   userPodcasts?: UserPodcastRec[]
   /** Ses dosyaları yedeğe girmez (çok büyük); sadece başlık ve transkript. */
   audios?: AudioRec[]
+  reviews?: ReviewRec[]
 }
 
-const ALL_TABLES = () => [db.texts, db.lemmas, db.usages, db.settings, db.books, db.progress, db.study, db.podcastLogs, db.userPodcasts, db.audios]
+const ALL_TABLES = () => [db.texts, db.lemmas, db.usages, db.settings, db.books, db.progress, db.study, db.podcastLogs, db.userPodcasts, db.audios, db.reviews]
 
 export async function exportBackup(): Promise<Backup> {
   return {
@@ -218,6 +221,7 @@ export async function exportBackup(): Promise<Backup> {
     podcastLogs: await db.podcastLogs.toArray(),
     userPodcasts: await db.userPodcasts.toArray(),
     audios: (await db.audios.toArray()).map(({ blob: _blob, ...rest }) => rest),
+    reviews: await db.reviews.toArray(),
   }
 }
 
@@ -239,6 +243,7 @@ export async function importBackup(data: unknown) {
     await db.podcastLogs.bulkPut(b.podcastLogs ?? [])
     await db.userPodcasts.bulkPut(b.userPodcasts ?? [])
     await db.audios.bulkPut(b.audios ?? [])
+    await db.reviews.bulkPut(b.reviews ?? [])
   })
 }
 

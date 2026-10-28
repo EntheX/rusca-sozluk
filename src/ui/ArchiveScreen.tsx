@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo, useState } from 'react'
+import { ReviewPanel } from './ReviewScreens'
 import { db } from '../db'
 import { deleteText } from '../logic/store'
 import { tokenize } from '../morph/tokenize'
@@ -93,6 +94,7 @@ export function TextView({ id, highlight }: { id: number; highlight?: number }) 
           {parts}
         </div>
       </div>
+      {text.status === 'committed' && <ReviewPanel text={text} />}
       <div className="row">
         <a className="btn primary" href={'#/yaz/' + id}>
           {text.status === 'draft' ? 'Devam et' : 'Düzenle'}

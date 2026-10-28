@@ -94,6 +94,32 @@ export interface UserPodcastRec {
 }
 
 /** Kullanıcının yüklediği ses dosyası (podcast bölümü vb.), isteğe bağlı transkriptle. */
+export interface ReviewError {
+  /** Hata türü (ERROR_TYPES'tan biri ya da serbest) */
+  type: string
+  wrong: string
+  right: string
+  note: string
+}
+
+/** Bir metnin Claude değerlendirmesi. Metin sonradan değişirse body farkından anlaşılır. */
+export interface ReviewRec {
+  id?: number
+  textId: number
+  at: number
+  /** Değerlendirilen metin (sonradan düzenlendiyse eski kalır) */
+  body: string
+  level: string
+  score?: number
+  summary: string
+  errors: ReviewError[]
+  corrected: string
+  strengths: string[]
+  tips: string[]
+  /** JSON çözülemezse yapıştırılan ham metin */
+  raw?: string
+}
+
 export interface AudioRec {
   id?: number
   title: string
@@ -124,6 +150,7 @@ export type DB = Dexie & {
   podcastLogs: EntityTable<PodcastLogRec, 'id'>
   userPodcasts: EntityTable<UserPodcastRec, 'id'>
   audios: EntityTable<AudioRec, 'id'>
+  reviews: EntityTable<ReviewRec, 'id'>
 }
 
 export const DEMO_KEY = 'rs-demo'
@@ -165,6 +192,9 @@ export function openDb(name: string): DB {
   })
   d.version(3).stores({
     audios: '++id, addedAt',
+  })
+  d.version(4).stores({
+    reviews: '++id, textId, at',
   })
   return d
 }

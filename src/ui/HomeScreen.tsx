@@ -2,7 +2,9 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { currentBlock, fmtRange } from '../content/calendar'
 import { db } from '../db'
 import { getReadable } from '../logic/library'
-import { IconArchive, IconBook, IconChart, IconHeadphones, IconRead, IconSettings, IconWrite } from './icons'
+import { IconArchive, IconBook, IconChart, IconCheck, IconHeadphones, IconLayers, IconRead, IconSettings, IconWrite } from './icons'
+import { DAY_NAMES, THEME_PACKS, todayIndex } from '../content/themes'
+import { writeHref } from './ThemeScreen'
 import { GOAL } from './SummaryScreen'
 
 function greeting() {
@@ -57,6 +59,8 @@ export function HomeScreen() {
   }, [])
   const listened = useLiveQuery(() => db.podcastLogs.where('date').above(Date.now() - 7 * 86400000).count(), []) ?? 0
   const cb = currentBlock()
+  const pack = cb && cb.block.no ? THEME_PACKS[cb.block.no - 1] : undefined
+  const dayNo = todayIndex()
   const today = new Date().toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' })
 
   return (
@@ -91,10 +95,22 @@ export function HomeScreen() {
             {cb.block.theme}
           </div>
           <div className="small-text muted">{fmtRange(cb.block)}</div>
+          {pack && (
+            <div className="today-topic">
+              <div className="muted small-text">Bugünün konusu ({DAY_NAMES[dayNo]})</div>
+              <strong>{pack.week[dayNo].title}</strong>
+              <div className="small-text">{pack.week[dayNo].prompt}</div>
+            </div>
+          )}
           {cb.block.no > 0 && (
-            <a className="btn small primary" style={{ marginTop: 10 }} href={'#/yaz?tema=' + encodeURIComponent(cb.block.theme)}>
-              Bu temada yaz
-            </a>
+            <div className="row" style={{ marginTop: 10 }}>
+              <a className="btn small primary" href={writeHref(cb.block.theme, dayNo)}>
+                Bugünün konusunu yaz
+              </a>
+              <a className="btn small" href={'#/tema/' + cb.block.no}>
+                Tema kelimeleri
+              </a>
+            </div>
           )}
         </div>
       )}
@@ -131,6 +147,12 @@ export function HomeScreen() {
         </a>
         <a href="#/arsiv">
           <IconArchive /> Arşiv
+        </a>
+        <a href="#/tema">
+          <IconLayers /> Temalar
+        </a>
+        <a href="#/hatalar">
+          <IconCheck /> Hata defteri
         </a>
         <a href="#/ayarlar">
           <IconSettings /> Ayarlar

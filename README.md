@@ -39,7 +39,9 @@ Ayarlar ekranının altında «✓ Çevrimdışı kullanıma hazır» yazıyorsa
 6. **Özet:** toplam kelime / 10.000, türe ve temaya göre dağılım, son 8 haftada haftalık yeni kelime.
 7. **Arşiv:** eski metni aç, düzenle, sil. Düzenleme ve silmede sözlük sayıları yeniden hesaplanır.
 8. **Dinle → Kendi ses dosyaların:** mp3/m4a/ogg/wav yükle; cihazda saklanır ve internetsiz çalınır (hız 0,75–1,25×, ±10 sn, kaldığın yerden devam). Yanına bölüm metnini (transkript) yapıştırır ya da .txt olarak eklersen okuma modundaki gibi renkli okursun. Ses dosyaları JSON yedeğine girmez (çok büyük); başlık, metin ve konum girer.
-9. **Ayarlar:** açık/koyu tema, tema listesini düzenleme, JSON yedek/geri yükleme, CSV dışa aktarma, demo modu.
+9. **Temalar ve günün konusu:** plandaki 12 temanın her biri için 7 günlük yazı/konuşma rotasyonu (her güne bir konu ve kullanılacak kalıplar) ve en az 50 kelime (fiil, sıfat, zarf, Türkçe anlamlarıyla). Ana sayfada bugünün konusu çıkar; «Bugünün konusunu yaz» Yaz ekranını o konuyla açar. Tema sayfasında metinlerinde kullandığın kelimeler yeşil görünür; kullanmadıklarını tek tuşla öğrenilecekler listesine ekleyebilirsin. Pazar günü Claude'dan bu kelimelerle 5 soru isteyebilirsin.
+10. **Değerlendirme:** sözlüğe yazdığın her metnin altında internetsiz hızlı kontrol (kelime/cümle sayısı, sözlükte olmayan kelimeler, kullanılan tema kelimeleri) ve «Claude ile değerlendir» düğmesi var. Düğme hazır istemi kopyalayıp claude.ai'yi açar; Claude'un cevabını geri yapıştırınca seviye, puan, tüm hatalar (türüyle ve açıklamasıyla), düzeltilmiş metin ve öneriler metne kaydedilir. **Hata defteri** bütün hataları türe göre sayar ve seviye geçmişini gösterir.
+11. **Ayarlar:** açık/koyu tema, tema listesini düzenleme, JSON yedek/geri yükleme, CSV dışa aktarma, demo modu.
 
 **Demo modu:** Ayarlar → Demo modunu aç. Ayrı bir veritabanında 4 örnek metin hazırlanır ve «Я родился и вырос в небольшом городе на юге Турции. В итоге я поступил в колледж.» metni çözümlenmiş olarak açılır. Sarı ve kırmızı kelime örneği için Arşiv'deki «Örnek» taslağını aç. Gerçek verine dokunmaz.
 

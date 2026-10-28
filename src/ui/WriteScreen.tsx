@@ -8,6 +8,11 @@ import { POS_LABELS } from '../morph/tags'
 import { go, lemmaHref, useMorph } from './hooks'
 import { MeaningsEditor } from './Meanings'
 import { STATUS_LABELS, TokenSheet } from './TokenSheet'
+import { THEME_PACKS, packByName, todayIndex } from '../content/themes'
+
+const THEME_INDEX = (name: string) => THEME_PACKS.findIndex((p) => p.name === name)
+import { DayCard } from './ThemeScreen'
+import { ReviewPanel } from './ReviewScreens'
 
 export const DEMO_TEXT = {
   title: 'О себе',
@@ -74,7 +79,7 @@ export function Legend({ counts }: { counts?: Record<AnalyzedToken['status'], nu
   )
 }
 
-export function WriteScreen({ textId, demo, initialTheme }: { textId?: number; demo?: boolean; initialTheme?: string }) {
+export function WriteScreen({ textId, demo, initialTheme, day }: { textId?: number; demo?: boolean; initialTheme?: string; day?: number }) {
   const ms = useMorph()
   const themes = useLiveQuery(getThemes, []) ?? []
   const [id, setId] = useState<number | undefined>(textId)
@@ -115,7 +120,13 @@ export function WriteScreen({ textId, demo, initialTheme }: { textId?: number; d
     const cal = currentBlock()
     const pick = [initialTheme, cal && !cal.upcoming ? cal.block.theme : undefined].find((t) => t && themes.includes(t))
     setTheme(pick ?? themes[0])
-  }, [themes, theme, textId, initialTheme])
+    // Günün konusundan gelindiyse başlık önerisi
+    const pack = pick ? packByName(pick) : undefined
+    if (pack && day != null && pack.week[day]) setTitle((t) => t || pack.week[day].title)
+  }, [themes, theme, textId, initialTheme, day])
+
+  const pack = packByName(theme)
+  const [dayIdx, setDayIdx] = useState(day ?? todayIndex())
 
   const tokens = useMemo(() => {
     if (phase === 'edit' || ms.status !== 'ready' || !ctx) return []
@@ -241,6 +252,21 @@ export function WriteScreen({ textId, demo, initialTheme }: { textId?: number; d
   return (
     <div>
       <h2>{textId != null ? 'Metni düzenle' : 'Yaz'}</h2>
+      {phase === 'edit' && textId == null && !demo && pack && (
+        <details className="day-details" open>
+          <summary>Bugünün konusu: {pack.week[dayIdx].title}</summary>
+          <DayCard pack={pack} day={dayIdx} />
+          <div className="row small-text" style={{ marginTop: -4, marginBottom: 12 }}>
+            <button className="small" onClick={() => setDayIdx((dayIdx + 6) % 7)}>
+              ← Önceki gün
+            </button>
+            <button className="small" onClick={() => setDayIdx((dayIdx + 1) % 7)}>
+              Sonraki gün →
+            </button>
+            <a href={'#/tema/' + (THEME_INDEX(pack.name) + 1)}>Tema kelimeleri</a>
+          </div>
+        </details>
+      )}
       {phase === 'edit' && (
         <div className="card">
           <label className="field">
@@ -350,6 +376,7 @@ export function WriteScreen({ textId, demo, initialTheme }: { textId?: number; d
 
 function DoneView({ result, textId, onNew }: { result: CommitResult; textId: number; onNew: () => void }) {
   const lemmas = useLiveQuery(() => db.lemmas.bulkGet(result.newLemmas), [result.newLemmas]) ?? []
+  const text = useLiveQuery(() => db.texts.get(textId), [textId])
   return (
     <div>
       <h2>Sözlüğe yazıldı</h2>
@@ -376,6 +403,7 @@ function DoneView({ result, textId, onNew }: { result: CommitResult; textId: num
           )}
         </div>
       )}
+      {text && <ReviewPanel text={text} />}
       <div className="row">
         <button className="primary" onClick={onNew}>
           Yeni metin yaz

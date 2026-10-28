@@ -25,3 +25,9 @@ export const IconRead = () => (
 export const IconHeadphones = () => (
   <svg viewBox="0 0 24 24" {...P}><path d="M3 18v-6a9 9 0 0 1 18 0v6" /><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3Z" /><path d="M3 19a2 2 0 0 0 2 2h1v-6H3Z" /></svg>
 )
+export const IconCheck = () => (
+  <svg viewBox="0 0 24 24" {...P}><path d="M9 11l3 3 8-8" /><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+)
+export const IconLayers = () => (
+  <svg viewBox="0 0 24 24" {...P}><path d="m12 2 10 5-10 5L2 7Z" /><path d="m2 17 10 5 10-5" /><path d="m2 12 10 5 10-5" /></svg>
+)
