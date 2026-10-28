@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { LEVELS } from '../content/graded'
 import { PODCASTS, type Podcast } from '../content/podcasts'
 import { db } from '../db'
+import { AudioList } from './AudioScreens'
 import { fmtDate } from './hooks'
 
 type Item = Podcast & { user?: number }
@@ -25,6 +26,7 @@ export function PodcastScreen() {
       <p className="small-text muted">
         Seviyene göre Rusça podcastler. Dinlediğin bölümü işaretle, kaptığın kelimeleri not al. Bu hafta {thisWeek} bölüm dinledin.
       </p>
+      <AudioList />
       {LEVELS.map((lv) => {
         const items = all.filter((p) => p.level === lv)
         if (!items.length) return null

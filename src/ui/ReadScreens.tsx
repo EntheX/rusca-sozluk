@@ -209,13 +209,9 @@ function AddBook({ onDone }: { onDone: () => void }) {
 /* ---------- Okuma ---------- */
 
 export function ReaderScreen({ bookKey }: { bookKey: string }) {
-  const ms = useMorph()
   const [book, setBook] = useState<Readable | null | undefined>(undefined)
   const progress = useLiveQuery(async () => (await db.progress.get(bookKey)) ?? null, [bookKey])
   const [chapter, setChapter] = useState<number | null>(null)
-  const active = useLiveQuery(() => db.lemmas.where('useCount').above(0).primaryKeys(), [])
-  const study = useLiveQuery(() => db.study.toArray(), [])
-  const [sel, setSel] = useState<number | null>(null)
 
   useEffect(() => {
     getReadable(bookKey).then(setBook)
@@ -231,12 +227,66 @@ export function ReaderScreen({ bookKey }: { bookKey: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookKey, chapter, book])
 
+  if (book === undefined || chapter == null) return <p className="muted">Yükleniyor…</p>
+  if (!book) return <p>Metin bulunamadı.</p>
+  const n = book.chapters.length
+  const isLast = chapter >= n - 1
+  const classic = classicByKey(bookKey)
+
+  return (
+    <div>
+      <p>
+        <a href="#/oku">← Kütüphane</a>
+      </p>
+      <h2 lang="ru" style={{ marginBottom: 2 }}>
+        {book.title}
+      </h2>
+      <p className="small-text muted">
+        {book.author} · <span className="lv">{book.level}</span>
+        {n > 1 && (
+          <>
+            {' '}
+            · {ch?.title} ({chapter + 1}/{n})
+          </>
+        )}
+      </p>
+      <ReadingText key={bookKey + ':' + chapter} body={ch?.body ?? ''} source={book.title} scope={n > 1 ? 'bölümde' : 'metinde'} />
+      <div className="row">
+        {chapter > 0 && <button onClick={() => (setChapter(chapter - 1), window.scrollTo(0, 0))}>← Önceki</button>}
+        <span className="grow" />
+        {!isLast ? (
+          <button className="primary" onClick={() => (setChapter(chapter + 1), window.scrollTo(0, 0))}>
+            Sonraki bölüm →
+          </button>
+        ) : (
+          <button
+            className="primary"
+            onClick={async () => {
+              await db.progress.put({ key: bookKey, chapter, updatedAt: Date.now(), finished: true })
+              go('oku')
+            }}
+          >
+            ✓ Bitirdim
+          </button>
+        )}
+      </div>
+      {classic && <p className="small-text muted">Kaynak: Vikikaynak, «{classic.page}». Kamu malı (public domain).</p>}
+    </div>
+  )
+}
+
+/** Sözlüğe göre renklendirilmiş okuma metni: istatistik, kelime paneli, öğrenilecekler. */
+export function ReadingText({ body, source, scope = 'metinde' }: { body: string; source: string; scope?: string }) {
+  const ms = useMorph()
+  const active = useLiveQuery(() => db.lemmas.where('useCount').above(0).primaryKeys(), [])
+  const study = useLiveQuery(() => db.study.toArray(), [])
+  const [sel, setSel] = useState<number | null>(null)
   const knownKeys = useMemo(() => new Set(active ?? []), [active])
   const studyMap = useMemo(() => new Map((study ?? []).map((s) => [s.id, s])), [study])
   const tokens = useMemo(() => {
-    if (!ch || ms.status !== 'ready') return []
-    return analyzeBody(ch.body, ms.morph, { knownKeys, textChoices: {}, formChoices: {} })
-  }, [ch, ms, knownKeys])
+    if (!body || ms.status !== 'ready') return []
+    return analyzeBody(body, ms.morph, { knownKeys, textChoices: {}, formChoices: {} })
+  }, [body, ms, knownKeys])
 
   const keyOf = (t: AnalyzedToken) => (t.choice && t.choice.kind === 'lemma' ? lemmaKey(t.choice.lemma, t.choice.pos) : null)
   const cls = (t: AnalyzedToken) => {
@@ -262,49 +312,26 @@ export function ReaderScreen({ bookKey }: { bookKey: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokens, knownKeys, studyMap])
 
-  if (book === undefined || chapter == null) return <p className="muted">Yükleniyor…</p>
-  if (!book) return <p>Metin bulunamadı.</p>
-  const n = book.chapters.length
-  const isLast = chapter >= n - 1
-  const classic = classicByKey(bookKey)
-
   const parts: React.ReactNode[] = []
   let pos = 0
-  if (ch) {
-    for (const t of tokens) {
-      if (t.start > pos) parts.push(ch.body.slice(pos, t.start))
-      parts.push(
-        <span key={t.index} className={'rd ' + cls(t) + (sel === t.index ? ' selected' : '')} role="button" tabIndex={0} onClick={() => setSel(t.index)}>
-          {ch.body.slice(t.start, t.end)}
-        </span>,
-      )
-      pos = t.end
-    }
-    parts.push(ch.body.slice(pos))
+  for (const t of tokens) {
+    if (t.start > pos) parts.push(body.slice(pos, t.start))
+    parts.push(
+      <span key={t.index} className={'rd ' + cls(t) + (sel === t.index ? ' selected' : '')} role="button" tabIndex={0} onClick={() => setSel(t.index)}>
+        {body.slice(t.start, t.end)}
+      </span>,
+    )
+    pos = t.end
   }
+  parts.push(body.slice(pos))
 
   const selToken = sel != null ? tokens.find((t) => t.index === sel) : undefined
 
   return (
-    <div>
-      <p>
-        <a href="#/oku">← Kütüphane</a>
-      </p>
-      <h2 lang="ru" style={{ marginBottom: 2 }}>
-        {book.title}
-      </h2>
-      <p className="small-text muted">
-        {book.author} · <span className="lv">{book.level}</span>
-        {n > 1 && (
-          <>
-            {' '}
-            · {ch?.title} ({chapter + 1}/{n})
-          </>
-        )}
-      </p>
+    <>
       {ms.status === 'ready' && stats.total > 0 && (
         <div className="card small-text">
-          Bu {n > 1 ? 'bölümde' : 'metinde'} {stats.total} farklı kelime var: <strong>{stats.known}</strong> tanesi sözlüğünde (%
+          Bu {scope} {stats.total} farklı kelime var: <strong>{stats.known}</strong> tanesi sözlüğünde (%
           {Math.round((stats.known / stats.total) * 100)}), {stats.study > 0 && <>{stats.study} öğrenilecek, </>}
           <strong>{stats.total - stats.known - stats.study}</strong> yeni.
           <div className="progress" style={{ height: 8 }}>
@@ -313,33 +340,10 @@ export function ReaderScreen({ bookKey }: { bookKey: string }) {
         </div>
       )}
       <div className="card reader" lang="ru">
-        {ms.status !== 'ready' ? <div className="analyzed">{ch?.body}</div> : <div className="analyzed reading">{parts}</div>}
+        {ms.status !== 'ready' ? <div className="analyzed">{body}</div> : <div className="analyzed reading">{parts}</div>}
       </div>
-      <div className="row">
-        {chapter > 0 && <button onClick={() => (setChapter(chapter - 1), setSel(null), window.scrollTo(0, 0))}>← Önceki</button>}
-        <span className="grow" />
-        {!isLast ? (
-          <button className="primary" onClick={() => (setChapter(chapter + 1), setSel(null), window.scrollTo(0, 0))}>
-            Sonraki bölüm →
-          </button>
-        ) : (
-          <button
-            className="primary"
-            onClick={async () => {
-              await db.progress.put({ key: bookKey, chapter, updatedAt: Date.now(), finished: true })
-              go('oku')
-            }}
-          >
-            ✓ Bitirdim
-          </button>
-        )}
-      </div>
-      {classic && <p className="small-text muted">Kaynak: Vikikaynak, «{classic.page}». Kamu malı (public domain).</p>}
-
-      {selToken && (
-        <ReaderSheet token={selToken} source={book.title} study={studyMap} known={knownKeys} onClose={() => setSel(null)} />
-      )}
-    </div>
+      {selToken && <ReaderSheet token={selToken} source={source} study={studyMap} known={knownKeys} onClose={() => setSel(null)} />}
+    </>
   )
 }
 

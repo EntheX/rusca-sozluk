@@ -15,6 +15,7 @@ import {
   type TextRec,
   type UsageRec,
   type UserPodcastRec,
+  type AudioRec,
 } from '../db'
 import type { AnalyzedToken } from './analyze'
 import { POS_LABELS } from '../morph/tags'
@@ -196,9 +197,11 @@ export interface Backup {
   study?: StudyRec[]
   podcastLogs?: PodcastLogRec[]
   userPodcasts?: UserPodcastRec[]
+  /** Ses dosyaları yedeğe girmez (çok büyük); sadece başlık ve transkript. */
+  audios?: AudioRec[]
 }
 
-const ALL_TABLES = () => [db.texts, db.lemmas, db.usages, db.settings, db.books, db.progress, db.study, db.podcastLogs, db.userPodcasts]
+const ALL_TABLES = () => [db.texts, db.lemmas, db.usages, db.settings, db.books, db.progress, db.study, db.podcastLogs, db.userPodcasts, db.audios]
 
 export async function exportBackup(): Promise<Backup> {
   return {
@@ -214,6 +217,7 @@ export async function exportBackup(): Promise<Backup> {
     study: await db.study.toArray(),
     podcastLogs: await db.podcastLogs.toArray(),
     userPodcasts: await db.userPodcasts.toArray(),
+    audios: (await db.audios.toArray()).map(({ blob: _blob, ...rest }) => rest),
   }
 }
 
@@ -234,6 +238,7 @@ export async function importBackup(data: unknown) {
     await db.study.bulkPut(b.study ?? [])
     await db.podcastLogs.bulkPut(b.podcastLogs ?? [])
     await db.userPodcasts.bulkPut(b.userPodcasts ?? [])
+    await db.audios.bulkPut(b.audios ?? [])
   })
 }
 

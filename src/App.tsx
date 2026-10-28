@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { isDemo, setDemo } from './db'
 import { seedDemo } from './logic/demo'
 import { loadMorph } from './morph/loadMorph'
+import { AudioScreen } from './ui/AudioScreens'
 import { ArchiveScreen, TextView } from './ui/ArchiveScreen'
 import { DictionaryScreen, LemmaDetail } from './ui/DictionaryScreen'
 import { MorphContext, useRoute, type MorphState } from './ui/hooks'
@@ -55,7 +56,7 @@ export default function App({ offlineReady }: { offlineReady: boolean }) {
       />
     )
   else if (section === 'oku') screen = parts[1] ? <ReaderScreen key={parts.slice(1).join('/')} bookKey={parts.slice(1).join('/')} /> : <LibraryScreen />
-  else if (section === 'dinle') screen = <PodcastScreen />
+  else if (section === 'dinle') screen = parts[1] === 'a' && parts[2] ? <AudioScreen key={parts[2]} id={Number(parts[2])} /> : <PodcastScreen />
   else if (section === 'ogren') screen = <StudyScreen />
   else if (section === 'sozluk') screen = parts[1] ? <LemmaDetail id={parts.slice(1).join('/')} /> : <DictionaryScreen />
   else if (section === 'ozet') screen = <SummaryScreen />

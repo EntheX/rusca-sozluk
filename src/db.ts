@@ -93,6 +93,21 @@ export interface UserPodcastRec {
   note: string
 }
 
+/** Kullanıcının yüklediği ses dosyası (podcast bölümü vb.), isteğe bağlı transkriptle. */
+export interface AudioRec {
+  id?: number
+  title: string
+  level: string
+  /** Yedekten geri yüklenen kayıtlarda ses dosyası yoktur. */
+  blob?: Blob
+  mime: string
+  size: number
+  transcript: string
+  position: number
+  duration?: number
+  addedAt: number
+}
+
 export interface SettingRec {
   key: string
   value: unknown
@@ -108,6 +123,7 @@ export type DB = Dexie & {
   study: EntityTable<StudyRec, 'id'>
   podcastLogs: EntityTable<PodcastLogRec, 'id'>
   userPodcasts: EntityTable<UserPodcastRec, 'id'>
+  audios: EntityTable<AudioRec, 'id'>
 }
 
 export const DEMO_KEY = 'rs-demo'
@@ -146,6 +162,9 @@ export function openDb(name: string): DB {
     study: 'id, addedAt',
     podcastLogs: '++id, podcastId, date',
     userPodcasts: '++id',
+  })
+  d.version(3).stores({
+    audios: '++id, addedAt',
   })
   return d
 }

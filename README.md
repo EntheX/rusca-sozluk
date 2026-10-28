@@ -38,7 +38,8 @@ Ayarlar ekranının altında «✓ Çevrimdışı kullanıma hazır» yazıyorsa
 5. **Sözlük:** arama (kelime, çekimli form, örn. *людей* yazınca *человек* bulunur, ya da Türkçe anlam), türe/temaya/tarihe göre filtre, sıralama. Kelime sayfasında anlamlar, kullandığın formlar ve tüm cümleler (metne bağlantılı).
 6. **Özet:** toplam kelime / 10.000, türe ve temaya göre dağılım, son 8 haftada haftalık yeni kelime.
 7. **Arşiv:** eski metni aç, düzenle, sil. Düzenleme ve silmede sözlük sayıları yeniden hesaplanır.
-8. **Ayarlar:** açık/koyu tema, tema listesini düzenleme, JSON yedek/geri yükleme, CSV dışa aktarma, demo modu.
+8. **Dinle → Kendi ses dosyaların:** mp3/m4a/ogg/wav yükle; cihazda saklanır ve internetsiz çalınır (hız 0,75–1,25×, ±10 sn, kaldığın yerden devam). Yanına bölüm metnini (transkript) yapıştırır ya da .txt olarak eklersen okuma modundaki gibi renkli okursun. Ses dosyaları JSON yedeğine girmez (çok büyük); başlık, metin ve konum girer.
+9. **Ayarlar:** açık/koyu tema, tema listesini düzenleme, JSON yedek/geri yükleme, CSV dışa aktarma, demo modu.
 
 **Demo modu:** Ayarlar → Demo modunu aç. Ayrı bir veritabanında 4 örnek metin hazırlanır ve «Я родился и вырос в небольшом городе на юге Турции. В итоге я поступил в колледж.» metni çözümlenmiş olarak açılır. Sarı ve kırmızı kelime örneği için Arşiv'deki «Örnek» taslağını aç. Gerçek verine dokunmaz.
 

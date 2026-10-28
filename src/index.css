@@ -827,3 +827,24 @@ p .rd {
   color: var(--text);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
+
+/* Ses oynatıcı */
+.player .seek {
+  width: 100%;
+  accent-color: var(--accent);
+  margin: 8px 0 2px;
+}
+.player .controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+.player .play {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  padding: 0;
+}
