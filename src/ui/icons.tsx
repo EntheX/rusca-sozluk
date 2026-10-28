@@ -37,3 +37,9 @@ export const IconMic = () => (
 export const IconCards = () => (
   <svg viewBox="0 0 24 24" {...P}><rect x="7" y="7" width="14" height="14" rx="2" /><path d="M17 3H5a2 2 0 0 0-2 2v12" /></svg>
 )
+export const IconEar = () => (
+  <svg viewBox="0 0 24 24" {...P}><path d="M6 8.5a6 6 0 1 1 12 0c0 3-2 4.5-3.5 6S13 17 13 19a3 3 0 0 1-6 0" /><path d="M10 8.5a2 2 0 1 1 4 0c0 1.2-1 1.8-1.6 2.6" /></svg>
+)
+export const IconExam = () => (
+  <svg viewBox="0 0 24 24" {...P}><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z" /><path d="M14 3v6h6" /><path d="M8 13h8" /><path d="M8 17h5" /></svg>
+)

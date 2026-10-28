@@ -7,6 +7,7 @@ import { describeGrammemes, POS_LABELS, POS_ORDER, type PosCode } from '../morph
 import { lemmaHref } from './hooks'
 import { MeaningsEditor } from './Meanings'
 import { Say } from './Say'
+import { ParadigmView } from './Paradigm'
 
 export const STATUS_LABELS: Record<AnalyzedToken['status'], string> = {
   known: 'Sözlüğünde var',
@@ -89,6 +90,12 @@ export function TokenSheet({ token, morph, pending, onPending, onChoose, onCorre
               <strong>{token.form}</strong> = <strong>{c.lemma}</strong> <span className="badge">{POS_LABELS[c.pos]}</span>
               <Say text={c.lemma} />
             </div>
+            {['verb', 'noun', 'adj'].includes(c.pos) && (
+              <details className="sheet-paradigm">
+                <summary className="small-text">Çekim tablosu</summary>
+                <ParadigmView lemma={c.lemma} pos={c.pos} />
+              </details>
+            )}
             <Tags grammemes={c.grammemes} />
             {(() => {
               const cand = cands.find((x) => x.lemma === c.lemma && x.pos === c.pos)

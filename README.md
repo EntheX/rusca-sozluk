@@ -47,7 +47,11 @@ Ayarlar ekranının altında «✓ Çevrimdışı kullanıma hazır» yazıyorsa
 14. **Anki'ye aktar** (Ayarlar): sözlüğün (kendi cümlelerinle), 12 temanın kelimeleri ya da hata defterin; Anki/AnkiDroid'de Dosya → İçe aktar.
 15. **Tekrar kartları:** öğrenilecekler listesi, tema kelimeleri ya da anlamı yazılmış sözlük kelimelerin için kart çalışma. Bildiğin kart 1, 2, 4, 8, 16, 32 gün arayla gelir (Leitner kutuları), bilmediğin aynı oturumda tekrar gelir. Türkçeden Rusçaya da sorabilir.
 16. **Sesli telaffuz ve günün kelimesi:** kelimelerin ve kalıpların yanındaki hoparlör düğmesi cihazın Rusça sesiyle okur (Windows/Android'de Rusça ses paketi gerekebilir). Ana sayfadaki günün kelimesi o haftanın temasından henüz kullanmadığın bir kelimedir ve her gün değişir.
-17. **Ayarlar:** açık/koyu tema, tema listesini düzenleme, JSON yedek/geri yükleme, CSV dışa aktarma, demo modu.
+17. **Çekim tablosu:** sözlükteki, tema listelerindeki ya da okurken dokunduğun her fiil, isim ve sıfat için bütün çekimler (şimdiki/gelecek/geçmiş/emir; 6 hâl tekil-çoğul; sıfatta cinsiyetler, kısa biçim, karşılaştırma). Yazılarında kullandığın formlar yeşil işaretlenir. İnternetsiz.
+18. **Dikte:** kendi metinlerinden ya da okuma metinlerinden bir cümle sesli okunur (normal/yavaş), sen yazarsın; doğru, yanlış, eksik ve fazla kelimeler gösterilir.
+19. **Gölgeleme:** yüklediğin ses dosyasında bir bölümü (A-B ya da «son 5 sn») döngüye al; istersen her tekrardan sonra senin söylemen için bölüm kadar bekler.
+20. **ТРКИ-2 yazma görevleri:** sınavın yazma bölümüne benzer 12 görev (gayriresmî mektup, resmî yazı/dilekçe, görüş yazısı). Süre tutulur, kelime sayısı hedefle karşılaştırılır; bitirince metin çözümlenir ve Claude değerlendirmesi görevi ve ТРКИ-2 ölçütlerini de içerir.
+21. **Ayarlar:** açık/koyu tema, tema listesini düzenleme, JSON yedek/geri yükleme, CSV dışa aktarma, demo modu.
 
 **Demo modu:** Ayarlar → Demo modunu aç. Ayrı bir veritabanında 4 örnek metin hazırlanır ve «Я родился и вырос в небольшом городе на юге Турции. В итоге я поступил в колледж.» metni çözümlenmiş olarak açılır. Sarı ve kırmızı kelime örneği için Arşiv'deki «Örnek» taslağını aç. Gerçek verine dokunmaz.
 

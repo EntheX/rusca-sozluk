@@ -8,7 +8,7 @@ import { isUsed, useActiveKeys, writeHref } from './ThemeScreen'
 import { Say } from './Say'
 import { lemmasOf } from '../content/themes'
 import { useStreak } from './StreakCalendar'
-import { IconCards, IconMic } from './icons'
+import { IconCards, IconEar, IconExam, IconMic } from './icons'
 import { GOAL } from './SummaryScreen'
 
 function greeting() {
@@ -197,6 +197,16 @@ export function HomeScreen() {
           <IconLayers />
           <strong>Temalar</strong>
           <span>12 tema, günlük konular ve kelime listeleri</span>
+        </a>
+        <a className="tile" href="#/dikte">
+          <IconEar />
+          <strong>Dikte</strong>
+          <span>Cümleyi dinle, yaz, farkları gör</span>
+        </a>
+        <a className="tile" href="#/trki">
+          <IconExam />
+          <strong>ТРКИ-2 yazma</strong>
+          <span>Sınav tipi görevler, süre ve değerlendirme</span>
         </a>
         <a className="tile" href="#/hatalar">
           <IconCheck />

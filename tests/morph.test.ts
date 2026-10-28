@@ -84,3 +84,29 @@ describe('ayırıcı', () => {
     expect(t[10].sentence).toBe('Кто-то, 2025.')
   })
 })
+
+describe('çekim tablosu', () => {
+  const cell = (lemma: string, pos: Parameters<Morph['paradigm']>[1], t: number, r: number, c = 0) => morph.paradigm(lemma, pos)[t].rows[r].cells[c]
+  it('tamamlanmış fiil: gelecek, geçmiş, emir', () => {
+    expect(cell('поступить', 'verb', 0, 0)).toBe('поступлю')
+    expect(cell('поступить', 'verb', 1, 1)).toBe('поступила')
+    expect(cell('поступить', 'verb', 2, 0)).toBe('поступи')
+  })
+  it('tamamlanmamış fiil: şimdiki ve birleşik gelecek', () => {
+    expect(cell('идти', 'verb', 0, 1, 0)).toBe('идёшь')
+    expect(cell('читать', 'verb', 0, 0, 1)).toBe('буду читать')
+    expect(cell('идти', 'verb', 1, 0)).toBe('шёл')
+  })
+  it('isim: человек → люди', () => {
+    expect(cell('человек', 'noun', 0, 1, 1)).toBe('людей')
+    expect(cell('человек', 'noun', 0, 4, 1)).toBe('людьми')
+  })
+  it('sıfat: karşılaştırma ve kısa biçim', () => {
+    const t = morph.paradigm('хороший', 'adj')
+    expect(t[0].rows[1].cells[2]).toBe('хорошей')
+    expect(t[1].rows.map((r) => r.cells[0]).join(' ')).toContain('лучше')
+  })
+  it('çekimsiz türler için boş', () => {
+    expect(morph.paradigm('очень', 'adv')).toEqual([])
+  })
+})

@@ -1,6 +1,7 @@
 // Metin değerlendirmesi: çevrimdışı hızlı kontrol + Claude için istem ve cevabın çözülmesi.
 
-import type { ReviewRec } from '../db'
+import type { ReviewRec, TextRec } from '../db'
+import { taskById } from '../content/trki'
 import { lemmasOf, packByName } from '../content/themes'
 import type { Morph } from '../morph/morph'
 import { splitSentences, tokenize } from '../morph/tokenize'
@@ -62,7 +63,17 @@ export function quickCheck(body: string, theme: string, morph: Morph): QuickChec
 
 /* ---------- Claude istemi ---------- */
 
-export function buildPrompt(text: { title: string; theme: string; body: string }, target = 'ТРКИ-2 (B2)'): string {
+export function buildPrompt(text: Pick<TextRec, 'title' | 'theme' | 'body' | 'task'>, target = 'ТРКИ-2 (B2)'): string {
+  const task = text.task ? taskById(text.task.id) : undefined
+  const taskPart = task
+    ? `
+Bu metin ТРКИ-2 «Письмо» alt testine benzer bir görev için yazıldı. Görev:
+«${task.ru}»
+Değinilmesi gerekenler: ${task.points.join('; ')}.
+Beklenen uzunluk: ${task.words[0]}–${task.words[1]} kelime, süre ${task.minutes} dakika; ben ${text.task!.minutes} dakikada yazdım.
+Özet kısmında görevi ne kadar yerine getirdiğimi (tüm noktalara değinmiş miyim, üslup türe uygun mu: mektup/resmî yazı/görüş yazısı), metnin yapısını ve ТРКИ-2 düzeyinde geçer olup olmayacağını da değerlendir.
+`
+    : ''
   return `Rusça öğreniyorum (şu an yaklaşık B1, hedefim ${target}). Aşağıdaki metni bir Rusça öğretmeni gibi değerlendir.
 
 Kurallar:
@@ -86,6 +97,7 @@ Kurallar:
 }
 \`\`\`
 
+${taskPart}
 Başlık: ${text.title}
 Tema: ${text.theme}
 

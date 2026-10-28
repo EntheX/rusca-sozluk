@@ -17,6 +17,8 @@ export interface TextRec {
   status: 'draft' | 'committed'
   /** Bu metinde form bazında yapılan seçimler (küçük harfli form → seçim). */
   choices: Record<string, Choice>
+  /** ТРКИ-2 yazma görevinden geldiyse görev kimliği ve harcanan süre (dk) */
+  task?: { id: string; minutes: number }
 }
 
 export interface LemmaRec {

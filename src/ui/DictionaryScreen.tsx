@@ -8,6 +8,7 @@ import { fmtDate, lemmaHref, useMorph } from './hooks'
 import { MeaningsEditor } from './Meanings'
 import { SozlukTabs } from './ReadScreens'
 import { Say } from './Say'
+import { ParadigmView } from './Paradigm'
 
 type Sort = 'alpha' | 'newest' | 'recent' | 'count'
 type Period = 'all' | '7' | '30' | '90' | '365'
@@ -210,6 +211,13 @@ export function LemmaDetail({ id }: { id: string }) {
           </tbody>
         </table>
       </div>
+
+      <details className="card">
+        <summary>
+          <strong>Çekim tablosu</strong>
+        </summary>
+        <ParadigmView lemma={lemma.lemma} pos={lemma.pos} used={forms.map((f) => f.form)} />
+      </details>
 
       <div className="card">
         <h3 style={{ marginTop: 0 }}>Cümleler ({sorted.length})</h3>

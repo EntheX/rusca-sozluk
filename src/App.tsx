@@ -15,15 +15,19 @@ import { MistakesScreen } from './ui/ReviewScreens'
 import { ThemeScreen, ThemesScreen } from './ui/ThemeScreen'
 import { SpeakScreen } from './ui/SpeakScreen'
 import { CardsScreen } from './ui/CardsScreen'
+import { ParadigmScreen } from './ui/Paradigm'
+import type { PosCode } from './morph/tags'
+import { DictationScreen } from './ui/DictationScreen'
+import { TrkiScreen, TrkiTask } from './ui/TrkiScreen'
 import { SettingsScreen } from './ui/SettingsScreen'
 import { SummaryScreen } from './ui/SummaryScreen'
 import { WriteScreen } from './ui/WriteScreen'
 
 const NAV = [
   { path: '', label: 'Ana sayfa', Icon: IconHome, match: ['', 'ozet', 'arsiv', 'ayarlar', 'hatalar'] },
-  { path: 'yaz', label: 'Yaz', Icon: IconWrite, match: ['yaz', 'tema', 'konus'] },
+  { path: 'yaz', label: 'Yaz', Icon: IconWrite, match: ['yaz', 'tema', 'konus', 'trki'] },
   { path: 'oku', label: 'Oku', Icon: IconRead, match: ['oku'] },
-  { path: 'dinle', label: 'Dinle', Icon: IconHeadphones, match: ['dinle'] },
+  { path: 'dinle', label: 'Dinle', Icon: IconHeadphones, match: ['dinle', 'dikte'] },
   { path: 'sozluk', label: 'Sözlük', Icon: IconBook, match: ['sozluk', 'ogren', 'tekrar'] },
 ]
 
@@ -74,6 +78,9 @@ export default function App({ offlineReady }: { offlineReady: boolean }) {
   else if (section === 'tema') screen = parts[1] ? <ThemeScreen key={parts[1]} no={Number(parts[1])} /> : <ThemesScreen />
   else if (section === 'konus')
     screen = <SpeakScreen key={query.toString()} initialTheme={query.get('tema') ?? undefined} initialDay={query.get('gun') != null ? Number(query.get('gun')) : undefined} />
+  else if (section === 'cekim') screen = <ParadigmScreen key={query.toString()} word={query.get('w') ?? ''} pos={(query.get('p') ?? 'verb') as PosCode} />
+  else if (section === 'dikte') screen = <DictationScreen />
+  else if (section === 'trki') screen = parts[1] ? <TrkiTask key={parts[1]} id={parts[1]} /> : <TrkiScreen />
   else if (section === 'tekrar') screen = <CardsScreen />
   else if (section === 'hatalar') screen = <MistakesScreen />
   else if (section === 'ayarlar') screen = <SettingsScreen offlineReady={offlineReady} />

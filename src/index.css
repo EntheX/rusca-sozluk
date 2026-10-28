@@ -1110,3 +1110,83 @@ p .rd {
   font-size: 1.6rem;
   font-weight: 700;
 }
+
+/* Çekim tablosu */
+.paradigm .card {
+  overflow-x: auto;
+}
+.paradigm table.forms td {
+  white-space: nowrap;
+}
+.used-form {
+  background: var(--known-bg);
+  color: inherit;
+  border-radius: 4px;
+  padding: 0 2px;
+}
+details.card > summary {
+  cursor: pointer;
+  padding: 2px 0;
+}
+details.card[open] > summary {
+  margin-bottom: 10px;
+}
+.plain-link {
+  color: inherit;
+  text-decoration: underline dotted;
+}
+.sheet-paradigm {
+  margin: 6px 0;
+}
+.sheet-paradigm > summary {
+  cursor: pointer;
+  color: var(--accent);
+  padding: 4px 0;
+}
+.sheet-paradigm .card {
+  padding: 8px;
+  margin: 6px 0;
+}
+
+/* Dikte */
+.dictation-result {
+  font-size: 1.15rem;
+  line-height: 1.9;
+  margin: 10px 0 4px;
+}
+.dictation-result del {
+  color: var(--unk-line);
+}
+.dictation-result ins {
+  color: var(--known-line);
+  text-decoration: none;
+  font-weight: 600;
+}
+.d-missing ins {
+  border-bottom: 2px dashed var(--known-line);
+}
+.shadow-box {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+
+/* ТРКИ-2 görevleri */
+.trki-bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.trki-time {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.trki-time.over {
+  color: var(--unk-line);
+}

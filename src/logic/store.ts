@@ -78,11 +78,13 @@ export async function commitText(
       if (t.choice && (t.resolvedBy === 'text' || t.status === 'ambiguous')) choices[t.form] = t.choice
     }
 
+    const existing = text.id != null ? await db.texts.get(text.id) : undefined
     const rec: TextRec = {
       ...(text as TextRec),
       updatedAt: now,
       status: 'committed',
       choices,
+      task: text.task ?? existing?.task,
     }
     const textId = (await db.texts.put(rec)) as number
 
@@ -156,6 +158,7 @@ export async function saveDraft(text: Omit<TextRec, 'id' | 'status' | 'choices'>
     updatedAt: Date.now(),
     status: existing?.status ?? 'draft',
     choices: existing?.choices ?? {},
+    task: text.task ?? existing?.task,
   }
   return (await db.texts.put(rec)) as number
 }

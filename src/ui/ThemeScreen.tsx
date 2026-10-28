@@ -4,6 +4,7 @@ import { currentBlock } from '../content/calendar'
 import { DAY_NAMES, DAY_SHORT, THEME_PACKS, lemmasOf, todayIndex, type ThemePack, type ThemeWord, type WordPos } from '../content/themes'
 import { db, lemmaKey } from '../db'
 import { Say } from './Say'
+import { paradigmHref } from './Paradigm'
 
 const POS_TITLES: Record<WordPos, string> = { verb: 'Fiiller', adj: 'Sıfatlar', adv: 'Zarflar' }
 
@@ -108,7 +109,9 @@ export function ThemeScreen({ no }: { no: number }) {
                 const u = keys ? isUsed(w, keys) : false
                 return (
                   <li key={w.ru} className={u ? 'used' : ''}>
-                    <span lang="ru">{w.ru}</span>
+                    <a lang="ru" href={paradigmHref(lemmasOf(w)[0], w.pos)} className="plain-link">
+                      {w.ru}
+                    </a>
                     <Say text={w.ru} />
                     <span className="muted"> — {w.tr}</span>
                     {u && <span aria-label="kullanıldı"> ✓</span>}

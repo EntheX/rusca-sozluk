@@ -174,6 +174,12 @@ export function AudioScreen({ id }: { id: number }) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState('')
   const lastSaved = useRef(0)
+  // Gölgeleme: A-B döngüsü; isteğe bağlı olarak her tekrardan sonra konuşman için boşluk
+  const [loopA, setLoopA] = useState<number | null>(null)
+  const [loopB, setLoopB] = useState<number | null>(null)
+  const [gap, setGap] = useState(true)
+  const gapTimer = useRef<number | null>(null)
+  useEffect(() => () => void (gapTimer.current && clearTimeout(gapTimer.current)), [])
   const replaceRef = useRef<HTMLInputElement>(null)
 
   const hasBlob = !!rec?.blob
@@ -194,6 +200,17 @@ export function AudioScreen({ id }: { id: number }) {
     const a = audioRef.current
     if (!a) return
     setTime(a.currentTime)
+    if (loopA != null && loopB != null && a.currentTime >= loopB && !a.paused) {
+      if (gap) {
+        a.pause()
+        // Bölüm kadar sessiz bekle (sen tekrar et), sonra başa dön
+        gapTimer.current = window.setTimeout(() => {
+          a.currentTime = loopA
+          a.play()
+        }, ((loopB - loopA) / a.playbackRate) * 1000 + 600)
+      } else a.currentTime = loopA
+      return
+    }
     if (Math.abs(a.currentTime - lastSaved.current) > 5) {
       lastSaved.current = a.currentTime
       db.audios.update(id, { position: a.currentTime })
@@ -274,6 +291,59 @@ export function AudioScreen({ id }: { id: number }) {
               <button onClick={() => seek(10)} aria-label="10 saniye ileri">
                 +10 sn
               </button>
+            </div>
+            <div className="shadow-box">
+              <div className="small-text">
+                <strong>Gölgeleme</strong>{' '}
+                <span className="muted">
+                  {loopA != null && loopB != null
+                    ? `${fmtTime(loopA)} – ${fmtTime(loopB)} arası döngüde`
+                    : 'bir bölümü döngüye al, dinle ve üstüne tekrar et'}
+                </span>
+              </div>
+              <div className="row" style={{ marginTop: 6 }}>
+                <button
+                  className="small"
+                  onClick={() => {
+                    const t = audioRef.current?.currentTime ?? 0
+                    setLoopA(Math.max(0, t - 5))
+                    setLoopB(t)
+                    if (audioRef.current) {
+                      audioRef.current.currentTime = Math.max(0, t - 5)
+                      audioRef.current.play()
+                    }
+                  }}
+                >
+                  Son 5 sn'yi döngüle
+                </button>
+                <button className={'small' + (loopA != null ? ' primary' : '')} onClick={() => setLoopA(audioRef.current?.currentTime ?? 0)}>
+                  A {loopA != null ? fmtTime(loopA) : ''}
+                </button>
+                <button
+                  className={'small' + (loopB != null ? ' primary' : '')}
+                  onClick={() => {
+                    const t = audioRef.current?.currentTime ?? 0
+                    if (loopA == null || t > loopA + 0.5) setLoopB(t)
+                  }}
+                >
+                  B {loopB != null ? fmtTime(loopB) : ''}
+                </button>
+                {(loopA != null || loopB != null) && (
+                  <button
+                    className="small"
+                    onClick={() => {
+                      setLoopA(null)
+                      setLoopB(null)
+                      if (gapTimer.current) clearTimeout(gapTimer.current)
+                    }}
+                  >
+                    Kaldır
+                  </button>
+                )}
+              </div>
+              <label className="row small-text" style={{ gap: 6, marginTop: 6 }}>
+                <input type="checkbox" checked={gap} onChange={(e) => setGap(e.target.checked)} /> Her tekrardan sonra benim söylemem için bekle
+              </label>
             </div>
             <div className="row" style={{ justifyContent: 'center', marginTop: 8 }}>
               {SPEEDS.map((s) => (

@@ -30,6 +30,15 @@ export interface Morph {
   analyze(word: string): WordAnalysis
   /** Bilinmeyen kelime için yazım önerileri (1 harf hatası). */
   suggest(word: string): string[]
+  /** Sözlük halinden çekim tabloları (fiil, isim, sıfat); yoksa boş dizi. */
+  paradigm(lemma: string, pos: PosCode): ParadigmTable[]
+}
+
+export interface ParadigmTable {
+  title: string
+  cols: string[]
+  rows: Array<{ label: string; cells: string[] }>
+  note?: string
 }
 
 const DICT_PARSERS = ['Dictionary', 'HyphenParticle', 'HyphenAdverb', 'HyphenWords']
@@ -192,5 +201,116 @@ export function createMorph(Az: AzLike): Morph {
     return out
   }
 
-  return { analyze, suggest }
+  function paradigm(lemma: string, pos: PosCode): ParadigmTable[] {
+    const want = pos === 'verb' ? 'INFN' : pos === 'noun' ? 'NOUN' : pos === 'adj' ? 'ADJF' : null
+    if (!want) return []
+    const base = cleanWord(lemma)
+    const p = caseParses(base, lemma).find((x) => grammemesOf(x.tag)[0] === want && foldYo(String(x.normalize().word)) === foldYo(base))
+    if (!p) return []
+    const g = grammemesOf(p.tag)
+    const f = (gr: string[]): string => {
+      const r = p.inflect(gr)
+      return r && r.word ? String(r.word) : '—'
+    }
+    const cap = (w: string) => (PROPER.some((x) => g.includes(x)) && w !== '—' ? capitalize(w) : w)
+    const CASES: Array<[string, string]> = [
+      ['nomn', 'Yalın (кто? что?)'],
+      ['gent', 'İlgi (кого? чего?)'],
+      ['datv', 'Yönelme (кому? чему?)'],
+      ['accs', 'Belirtme (кого? что?)'],
+      ['ablt', 'Araç (кем? чем?)'],
+      ['loct', 'Bulunma (о ком? о чём?)'],
+    ]
+
+    if (want === 'INFN') {
+      const perf = g.includes('perf')
+      const t = perf ? 'futr' : 'pres'
+      const persons: Array<[string, string, string]> = [
+        ['я', '1per', 'sing'],
+        ['ты', '2per', 'sing'],
+        ['он / она', '3per', 'sing'],
+        ['мы', '1per', 'plur'],
+        ['вы', '2per', 'plur'],
+        ['они', '3per', 'plur'],
+      ]
+      const bud = ['буду', 'будешь', 'будет', 'будем', 'будете', 'будут']
+      const tables: ParadigmTable[] = [
+        {
+          title: perf ? 'Gelecek zaman (tamamlanmış)' : 'Şimdiki zaman / gelecek zaman',
+          cols: perf ? ['', 'gelecek'] : ['', 'şimdiki', 'gelecek'],
+          rows: persons.map(([label, per, num], i) => ({
+            label,
+            cells: perf ? [f([t, per, num])] : [f([t, per, num]), `${bud[i]} ${base}`],
+          })),
+          note: perf ? 'Tamamlanmış fiilin şimdiki zamanı yoktur; çekimli hali gelecek anlamı taşır.' : undefined,
+        },
+        {
+          title: 'Geçmiş zaman',
+          cols: ['', ''],
+          rows: [
+            { label: 'он (eril)', cells: [f(['past', 'masc'])] },
+            { label: 'она (dişil)', cells: [f(['past', 'femn'])] },
+            { label: 'оно (nötr)', cells: [f(['past', 'neut'])] },
+            { label: 'они (çoğul)', cells: [f(['past', 'plur'])] },
+          ],
+        },
+        {
+          title: 'Emir kipi',
+          cols: ['', ''],
+          rows: [
+            { label: 'ты', cells: [f(['impr', 'sing', 'excl'])] },
+            { label: 'вы', cells: [f(['impr', 'plur', 'excl'])] },
+          ],
+        },
+      ]
+      return tables
+    }
+
+    if (want === 'NOUN') {
+      const pltm = g.includes('Pltm')
+      const sgtm = g.includes('Sgtm')
+      return [
+        {
+          title: 'Hâl çekimi',
+          cols: ['', ...(pltm ? [] : ['tekil']), ...(sgtm ? [] : ['çoğul'])],
+          rows: CASES.map(([c, label]) => ({
+            label,
+            cells: [...(pltm ? [] : [cap(f([c, 'sing']))]), ...(sgtm ? [] : [cap(f([c, 'plur']))])],
+          })),
+          note: pltm ? 'Bu kelime yalnızca çoğul kullanılır.' : sgtm ? 'Bu kelime yalnızca tekil kullanılır.' : undefined,
+        },
+      ]
+    }
+
+    // Sıfat
+    const tables: ParadigmTable[] = [
+      {
+        title: 'Hâl çekimi',
+        cols: ['', 'eril', 'nötr', 'dişil', 'çoğul'],
+        rows: CASES.map(([c, label]) => ({
+          label,
+          cells:
+            c === 'accs'
+              ? [`${f([c, 'masc', 'inan'])} / ${f([c, 'masc', 'anim'])}`, f([c, 'neut']), f([c, 'femn']), `${f([c, 'plur', 'inan'])} / ${f([c, 'plur', 'anim'])}`]
+              : [f([c, 'masc']), f([c, 'neut']), f([c, 'femn']), f([c, 'plur'])],
+        })),
+        note: 'Belirtme halinde eril ve çoğulda: cansız / canlı.',
+      },
+    ]
+    const short = [f(['ADJS', 'masc']), f(['ADJS', 'neut']), f(['ADJS', 'femn']), f(['ADJS', 'plur'])]
+    const comp = f(['COMP'])
+    if (short.some((x) => x !== '—') || comp !== '—') {
+      tables.push({
+        title: 'Kısa biçim ve karşılaştırma',
+        cols: ['', ''],
+        rows: [
+          ...(short.some((x) => x !== '—') ? [{ label: 'kısa biçim', cells: [short.join(', ')] }] : []),
+          ...(comp !== '—' ? [{ label: 'karşılaştırma', cells: [comp] }] : []),
+        ],
+      })
+    }
+    return tables
+  }
+
+  return { analyze, suggest, paradigm }
 }

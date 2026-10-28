@@ -68,6 +68,7 @@ export function analyzeToken(token: Token, morph: Morph, ctx: AnalyzeContext): A
 export function analyzeBody(body: string, morph: Morph, ctx: AnalyzeContext): AnalyzedToken[] {
   const cache = new Map<string, WordAnalysis>()
   const cached: Morph = {
+    paradigm: morph.paradigm,
     analyze: (w) => {
       let a = cache.get(w)
       if (!a) {

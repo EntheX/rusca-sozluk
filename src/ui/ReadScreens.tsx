@@ -10,6 +10,7 @@ import { go, lemmaHref, useMorph } from './hooks'
 import { MeaningsEditor } from './Meanings'
 import { Tags } from './TokenSheet'
 import { Say } from './Say'
+import { ParadigmView } from './Paradigm'
 
 /* ---------- Kütüphane ---------- */
 
@@ -400,6 +401,12 @@ function ReaderSheet({
               {key && known.has(key) && <span className="badge st-known">sözlüğünde</span>}
               {st && <span className="badge st-ambiguous">öğrenilecek</span>}
             </div>
+            {['verb', 'noun', 'adj'].includes(c.pos) && (
+              <details className="sheet-paradigm">
+                <summary className="small-text">Çekim tablosu</summary>
+                <ParadigmView lemma={c.lemma} pos={c.pos} />
+              </details>
+            )}
             <Tags grammemes={c.grammemes} />
             {cands.length > 1 && (
               <div className="row small-text" style={{ margin: '6px 0' }}>
