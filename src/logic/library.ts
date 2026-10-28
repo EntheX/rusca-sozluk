@@ -48,7 +48,9 @@ export function htmlToParagraphs(html: string): string[] {
       .replace(/[ \t]+/g, ' ')
       .replace(/ *\n */g, '\n')
       .trim()
-    if (clean) out.push(clean)
+    // Vikikaynak içindekiler satırı ("I · II · III") okunacak metin değil
+    const isToc = clean.includes('·') && /^[IVXLC0-9\s·.,-]+$/.test(clean)
+    if (clean && !isToc) out.push(clean)
   }
   return out
 }
