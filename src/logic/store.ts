@@ -1,6 +1,21 @@
 // Sözlüğe yazma, metin silme, istatistiklerin yeniden hesaplanması, yedekleme.
 
-import { db, getFormChoices, getThemes, lemmaKey, setSetting, type Choice, type LemmaRec, type TextRec, type UsageRec } from '../db'
+import {
+  db,
+  getFormChoices,
+  getThemes,
+  lemmaKey,
+  setSetting,
+  type BookRec,
+  type Choice,
+  type LemmaRec,
+  type PodcastLogRec,
+  type ProgressRec,
+  type StudyRec,
+  type TextRec,
+  type UsageRec,
+  type UserPodcastRec,
+} from '../db'
 import type { AnalyzedToken } from './analyze'
 import { POS_LABELS } from '../morph/tags'
 
@@ -170,23 +185,35 @@ export async function renameTheme(from: string, to: string) {
 
 export interface Backup {
   app: 'rusca-sozluk'
-  version: 1
+  version: 1 | 2
   exportedAt: string
   texts: TextRec[]
   lemmas: LemmaRec[]
   usages: UsageRec[]
   settings: Array<{ key: string; value: unknown }>
+  books?: BookRec[]
+  progress?: ProgressRec[]
+  study?: StudyRec[]
+  podcastLogs?: PodcastLogRec[]
+  userPodcasts?: UserPodcastRec[]
 }
+
+const ALL_TABLES = () => [db.texts, db.lemmas, db.usages, db.settings, db.books, db.progress, db.study, db.podcastLogs, db.userPodcasts]
 
 export async function exportBackup(): Promise<Backup> {
   return {
     app: 'rusca-sozluk',
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     texts: await db.texts.toArray(),
     lemmas: await db.lemmas.toArray(),
     usages: await db.usages.toArray(),
     settings: await db.settings.toArray(),
+    books: await db.books.toArray(),
+    progress: await db.progress.toArray(),
+    study: await db.study.toArray(),
+    podcastLogs: await db.podcastLogs.toArray(),
+    userPodcasts: await db.userPodcasts.toArray(),
   }
 }
 
@@ -196,12 +223,17 @@ export async function importBackup(data: unknown) {
   if (!b || b.app !== 'rusca-sozluk' || !Array.isArray(b.texts) || !Array.isArray(b.lemmas) || !Array.isArray(b.usages)) {
     throw new Error('Bu dosya bir Rusça Sözlük yedeği değil.')
   }
-  await db.transaction('rw', [db.texts, db.lemmas, db.usages, db.settings], async () => {
-    await Promise.all([db.texts.clear(), db.lemmas.clear(), db.usages.clear(), db.settings.clear()])
+  await db.transaction('rw', ALL_TABLES(), async () => {
+    await Promise.all(ALL_TABLES().map((t) => t.clear()))
     await db.texts.bulkPut(b.texts)
     await db.lemmas.bulkPut(b.lemmas)
     await db.usages.bulkPut(b.usages)
     await db.settings.bulkPut(b.settings ?? [])
+    await db.books.bulkPut(b.books ?? [])
+    await db.progress.bulkPut(b.progress ?? [])
+    await db.study.bulkPut(b.study ?? [])
+    await db.podcastLogs.bulkPut(b.podcastLogs ?? [])
+    await db.userPodcasts.bulkPut(b.userPodcasts ?? [])
   })
 }
 

@@ -6,17 +6,20 @@ import { ArchiveScreen, TextView } from './ui/ArchiveScreen'
 import { DictionaryScreen, LemmaDetail } from './ui/DictionaryScreen'
 import { MorphContext, useRoute, type MorphState } from './ui/hooks'
 import { useInstall } from './ui/install'
-import { IconArchive, IconBook, IconChart, IconSettings, IconWrite } from './ui/icons'
+import { HomeScreen } from './ui/HomeScreen'
+import { IconBook, IconHeadphones, IconHome, IconRead, IconSettings, IconWrite } from './ui/icons'
+import { PodcastScreen } from './ui/PodcastScreen'
+import { LibraryScreen, ReaderScreen, StudyScreen } from './ui/ReadScreens'
 import { SettingsScreen } from './ui/SettingsScreen'
 import { SummaryScreen } from './ui/SummaryScreen'
 import { WriteScreen } from './ui/WriteScreen'
 
 const NAV = [
-  { path: 'yaz', label: 'Yaz', Icon: IconWrite },
-  { path: 'sozluk', label: 'Sözlük', Icon: IconBook },
-  { path: 'ozet', label: 'Özet', Icon: IconChart },
-  { path: 'arsiv', label: 'Arşiv', Icon: IconArchive },
-  { path: 'ayarlar', label: 'Ayarlar', Icon: IconSettings },
+  { path: '', label: 'Ana sayfa', Icon: IconHome, match: ['', 'ozet', 'arsiv', 'ayarlar'] },
+  { path: 'yaz', label: 'Yaz', Icon: IconWrite, match: ['yaz'] },
+  { path: 'oku', label: 'Oku', Icon: IconRead, match: ['oku'] },
+  { path: 'dinle', label: 'Dinle', Icon: IconHeadphones, match: ['dinle'] },
+  { path: 'sozluk', label: 'Sözlük', Icon: IconBook, match: ['sozluk', 'ogren'] },
 ]
 
 export default function App({ offlineReady }: { offlineReady: boolean }) {
@@ -38,11 +41,22 @@ export default function App({ offlineReady }: { offlineReady: boolean }) {
     )
   }, [])
 
-  const section = parts[0] ?? 'yaz'
+  const section = parts[0] ?? ''
   let screen: React.ReactNode
   if (seeding) screen = <p className="muted">Demo verisi hazırlanıyor…</p>
+  else if (section === '') screen = <HomeScreen />
   else if (section === 'yaz')
-    screen = <WriteScreen key={parts[1] ?? (query.get('demo') ? 'demo' : 'new')} textId={parts[1] ? Number(parts[1]) : undefined} demo={query.get('demo') === '1'} />
+    screen = (
+      <WriteScreen
+        key={parts[1] ?? (query.get('demo') ? 'demo' : 'new:' + (query.get('tema') ?? ''))}
+        textId={parts[1] ? Number(parts[1]) : undefined}
+        demo={query.get('demo') === '1'}
+        initialTheme={query.get('tema') ?? undefined}
+      />
+    )
+  else if (section === 'oku') screen = parts[1] ? <ReaderScreen key={parts.slice(1).join('/')} bookKey={parts.slice(1).join('/')} /> : <LibraryScreen />
+  else if (section === 'dinle') screen = <PodcastScreen />
+  else if (section === 'ogren') screen = <StudyScreen />
   else if (section === 'sozluk') screen = parts[1] ? <LemmaDetail id={parts.slice(1).join('/')} /> : <DictionaryScreen />
   else if (section === 'ozet') screen = <SummaryScreen />
   else if (section === 'arsiv')
@@ -58,13 +72,22 @@ export default function App({ offlineReady }: { offlineReady: boolean }) {
     <MorphContext.Provider value={ms}>
       <div className="app">
         <header className="topbar">
-          <h1>Rusça Sözlüğüm</h1>
+          <h1>
+            <a href="#/" style={{ color: 'inherit', textDecoration: 'none' }}>
+              Rusça Sözlüğüm
+            </a>
+          </h1>
+          <div className="actions">
           {ms.status === 'loading' && <span className="small-text muted">sözlük yükleniyor…</span>}
           {ms.status !== 'loading' && canInstall && (
             <button className="small primary" onClick={install}>
               Uygulamayı yükle
             </button>
           )}
+          <a className="btn icon-btn" href="#/ayarlar" aria-label="Ayarlar">
+            <IconSettings />
+          </a>
+          </div>
         </header>
         {isDemo() && (
           <div className="demo-banner">
@@ -79,8 +102,8 @@ export default function App({ offlineReady }: { offlineReady: boolean }) {
       </div>
       <nav className="nav" aria-label="Ana menü">
         <div className="nav-inner">
-          {NAV.map(({ path, label, Icon }) => (
-            <a key={path} href={'#/' + path} className={section === path ? 'active' : ''} aria-current={section === path ? 'page' : undefined}>
+          {NAV.map(({ path, label, Icon, match }) => (
+            <a key={path} href={'#/' + path} className={match.includes(section) ? 'active' : ''} aria-current={match.includes(section) ? 'page' : undefined}>
               <Icon />
               {label}
             </a>

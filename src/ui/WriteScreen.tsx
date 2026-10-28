@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { currentBlock } from '../content/calendar'
 import { db, getFormChoices, getThemes, lemmaKey, type Choice } from '../db'
 import { analyzeBody, candidateChoice, countByStatus, type AnalyzedToken } from '../logic/analyze'
 import { commitText, knownKeysExcluding, saveDraft, setMeanings, type CommitResult } from '../logic/store'
@@ -73,7 +74,7 @@ export function Legend({ counts }: { counts?: Record<AnalyzedToken['status'], nu
   )
 }
 
-export function WriteScreen({ textId, demo }: { textId?: number; demo?: boolean }) {
+export function WriteScreen({ textId, demo, initialTheme }: { textId?: number; demo?: boolean; initialTheme?: string }) {
   const ms = useMorph()
   const themes = useLiveQuery(getThemes, []) ?? []
   const [id, setId] = useState<number | undefined>(textId)
@@ -108,9 +109,13 @@ export function WriteScreen({ textId, demo }: { textId?: number; demo?: boolean 
     })
   }, [textId])
 
+  // Yeni metinde varsayılan tema: bağlantıyla gelen ya da takvimdeki güncel tema
   useEffect(() => {
-    if (!theme && themes.length && textId == null) setTheme(themes[0])
-  }, [themes, theme, textId])
+    if (theme || textId != null || !themes.length) return
+    const cal = currentBlock()
+    const pick = [initialTheme, cal && !cal.upcoming ? cal.block.theme : undefined].find((t) => t && themes.includes(t))
+    setTheme(pick ?? themes[0])
+  }, [themes, theme, textId, initialTheme])
 
   const tokens = useMemo(() => {
     if (phase === 'edit' || ms.status !== 'ready' || !ctx) return []

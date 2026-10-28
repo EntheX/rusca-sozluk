@@ -56,4 +56,12 @@ export async function seedDemo(morph: Morph) {
     await commitText({ title: s.title, theme: s.theme, body: s.body, createdAt, updatedAt: createdAt }, tokens, s.meanings ?? {}, {})
   }
   await db.texts.add({ ...DRAFT, createdAt: now, updatedAt: now, status: 'draft', choices: {} } as never)
+  // Okuma ve dinleme örnekleri
+  await db.study.bulkPut([
+    { id: 'столица|noun', lemma: 'столица', pos: 'noun', meanings: ['başkent'], sentence: 'Анкара — столица Турции.', source: 'Это Эмре', addedAt: now - 86400000 },
+    { id: 'больница|noun', lemma: 'больница', pos: 'noun', meanings: ['hastane'], sentence: 'Она работает в больнице.', source: 'Это Эмре', addedAt: now - 86400000 },
+    { id: 'слепок|noun', lemma: 'слепок', pos: 'noun', meanings: ['ölçü (diş)'], sentence: 'Сначала стоматолог делает слепок зубов пациента.', source: 'Зубной техник', addedAt: now },
+  ])
+  await db.progress.put({ key: 'g:a2-tehnik', chapter: 0, updatedAt: now })
+  await db.podcastLogs.add({ podcastId: 'slow', date: now - 2 * 86400000, note: 'Bölüm: «Моя работа». Yeni: увольняться, отпуск за свой счёт' })
 }

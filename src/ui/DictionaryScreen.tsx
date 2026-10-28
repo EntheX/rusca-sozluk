@@ -6,6 +6,7 @@ import { describeGrammemes, POS_LABELS, POS_ORDER, type PosCode } from '../morph
 import { setMeanings } from '../logic/store'
 import { fmtDate, lemmaHref, useMorph } from './hooks'
 import { MeaningsEditor } from './Meanings'
+import { SozlukTabs } from './ReadScreens'
 
 type Sort = 'alpha' | 'newest' | 'recent' | 'count'
 type Period = 'all' | '7' | '30' | '90' | '365'
@@ -55,7 +56,7 @@ export function DictionaryScreen() {
 
   return (
     <div>
-      <h2>Sözlük</h2>
+      <SozlukTabs current="aktif" />
       <div className="filters">
         <input
           type="search"

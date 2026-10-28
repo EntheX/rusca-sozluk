@@ -47,6 +47,52 @@ export interface UsageRec {
   date: number
 }
 
+export interface BookRec {
+  /** "ws:<Vikikaynak sayfası>" ya da "u:<zaman damgası>" */
+  key: string
+  title: string
+  author: string
+  level: string
+  source: 'wikisource' | 'user'
+  chapters: Array<{ title: string; body: string }>
+  addedAt: number
+}
+
+/** Okuma ilerlemesi (hem yerleşik metinler hem kitaplar için, anahtar: kitap anahtarı). */
+export interface ProgressRec {
+  key: string
+  chapter: number
+  updatedAt: number
+  finished?: boolean
+}
+
+/** Okurken "öğrenilecekler" listesine eklenen kelime. */
+export interface StudyRec {
+  /** lemma anahtarı ("lemma|tür") */
+  id: string
+  lemma: string
+  pos: PosCode
+  meanings: string[]
+  sentence: string
+  source: string
+  addedAt: number
+}
+
+export interface PodcastLogRec {
+  id?: number
+  podcastId: string
+  date: number
+  note: string
+}
+
+export interface UserPodcastRec {
+  id?: number
+  title: string
+  url: string
+  level: string
+  note: string
+}
+
 export interface SettingRec {
   key: string
   value: unknown
@@ -57,6 +103,11 @@ export type DB = Dexie & {
   lemmas: EntityTable<LemmaRec, 'id'>
   usages: EntityTable<UsageRec, 'id'>
   settings: EntityTable<SettingRec, 'key'>
+  books: EntityTable<BookRec, 'key'>
+  progress: EntityTable<ProgressRec, 'key'>
+  study: EntityTable<StudyRec, 'id'>
+  podcastLogs: EntityTable<PodcastLogRec, 'id'>
+  userPodcasts: EntityTable<UserPodcastRec, 'id'>
 }
 
 export const DEMO_KEY = 'rs-demo'
@@ -77,7 +128,7 @@ export function setDemo(on: boolean) {
   } catch {
     return
   }
-  location.replace(location.pathname + (on ? '#/yaz?demo=1' : '#/yaz'))
+  location.replace(location.pathname + (on ? '#/yaz?demo=1' : '#/'))
   location.reload()
 }
 
@@ -88,6 +139,13 @@ export function openDb(name: string): DB {
     lemmas: 'id, lemma, pos, firstUsed, lastUsed, useCount, *themes',
     usages: '++id, lemmaId, textId, form, date',
     settings: 'key',
+  })
+  d.version(2).stores({
+    books: 'key, level, addedAt',
+    progress: 'key, updatedAt',
+    study: 'id, addedAt',
+    podcastLogs: '++id, podcastId, date',
+    userPodcasts: '++id',
   })
   return d
 }
