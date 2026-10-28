@@ -5,6 +5,8 @@ import { getReadable } from '../logic/library'
 import { IconArchive, IconBook, IconChart, IconCheck, IconHeadphones, IconLayers, IconRead, IconSettings, IconWrite } from './icons'
 import { DAY_NAMES, THEME_PACKS, todayIndex } from '../content/themes'
 import { writeHref } from './ThemeScreen'
+import { useStreak } from './StreakCalendar'
+import { IconMic } from './icons'
 import { GOAL } from './SummaryScreen'
 
 function greeting() {
@@ -61,6 +63,7 @@ export function HomeScreen() {
   const cb = currentBlock()
   const pack = cb && cb.block.no ? THEME_PACKS[cb.block.no - 1] : undefined
   const dayNo = todayIndex()
+  const streak = useStreak()
   const today = new Date().toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' })
 
   return (
@@ -83,6 +86,9 @@ export function HomeScreen() {
           </div>
           <div className="small-text muted">
             Bu hafta +{weekNew} yeni kelime · {texts} metin
+          </div>
+          <div className="small-text" style={{ marginTop: 2 }}>
+            {streak > 0 ? <strong>{streak} gün üst üste çalıştın</strong> : <span className="muted">Bugün başla, seri başlasın</span>}
           </div>
         </div>
       </a>
@@ -107,6 +113,9 @@ export function HomeScreen() {
               <a className="btn small primary" href={writeHref(cb.block.theme, dayNo)}>
                 Bugünün konusunu yaz
               </a>
+              <a className="btn small" href={'#/konus?tema=' + encodeURIComponent(cb.block.theme) + '&gun=' + dayNo}>
+                Sesli anlat
+              </a>
               <a className="btn small" href={'#/tema/' + cb.block.no}>
                 Tema kelimeleri
               </a>
@@ -120,6 +129,11 @@ export function HomeScreen() {
           <IconWrite />
           <strong>Yaz</strong>
           <span>Metin yaz, kelimeler sözlüğe girsin</span>
+        </a>
+        <a className="tile" href="#/konus">
+          <IconMic />
+          <strong>Konuş</strong>
+          <span>Günün konusunu 5 dakika anlat ve kaydet</span>
         </a>
         <a className="tile" href={lastRead ? '#/oku/' + encodeURIComponent(lastRead.key) : '#/oku'}>
           <IconRead />
@@ -136,6 +150,11 @@ export function HomeScreen() {
           <strong>Öğrenilecekler</strong>
           <span>{study ? `${study} kelime seni bekliyor` : 'Okurken eklediğin kelimeler'}</span>
         </a>
+        <a className="tile" href="#/hatalar">
+          <IconCheck />
+          <strong>Hata defteri</strong>
+          <span>Hataların türe göre, alıştırmalar</span>
+        </a>
       </div>
 
       <div className="links">
@@ -150,9 +169,6 @@ export function HomeScreen() {
         </a>
         <a href="#/tema">
           <IconLayers /> Temalar
-        </a>
-        <a href="#/hatalar">
-          <IconCheck /> Hata defteri
         </a>
         <a href="#/ayarlar">
           <IconSettings /> Ayarlar

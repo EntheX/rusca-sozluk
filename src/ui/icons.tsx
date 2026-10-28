@@ -31,3 +31,6 @@ export const IconCheck = () => (
 export const IconLayers = () => (
   <svg viewBox="0 0 24 24" {...P}><path d="m12 2 10 5-10 5L2 7Z" /><path d="m2 17 10 5 10-5" /><path d="m2 12 10 5 10-5" /></svg>
 )
+export const IconMic = () => (
+  <svg viewBox="0 0 24 24" {...P}><rect x="9" y="2" width="6" height="12" rx="3" /><path d="M5 11a7 7 0 0 0 14 0" /><path d="M12 18v4" /></svg>
+)

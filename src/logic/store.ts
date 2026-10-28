@@ -17,6 +17,7 @@ import {
   type UserPodcastRec,
   type AudioRec,
   type ReviewRec,
+  type RecordingRec,
 } from '../db'
 import type { AnalyzedToken } from './analyze'
 import { POS_LABELS } from '../morph/tags'
@@ -202,9 +203,11 @@ export interface Backup {
   /** Ses dosyaları yedeğe girmez (çok büyük); sadece başlık ve transkript. */
   audios?: AudioRec[]
   reviews?: ReviewRec[]
+  /** Kayıtların sesi yedeğe girmez; tarih ve konu girer (seri takvimi için). */
+  recordings?: RecordingRec[]
 }
 
-const ALL_TABLES = () => [db.texts, db.lemmas, db.usages, db.settings, db.books, db.progress, db.study, db.podcastLogs, db.userPodcasts, db.audios, db.reviews]
+const ALL_TABLES = () => [db.texts, db.lemmas, db.usages, db.settings, db.books, db.progress, db.study, db.podcastLogs, db.userPodcasts, db.audios, db.reviews, db.recordings]
 
 export async function exportBackup(): Promise<Backup> {
   return {
@@ -222,6 +225,7 @@ export async function exportBackup(): Promise<Backup> {
     userPodcasts: await db.userPodcasts.toArray(),
     audios: (await db.audios.toArray()).map(({ blob: _blob, ...rest }) => rest),
     reviews: await db.reviews.toArray(),
+    recordings: (await db.recordings.toArray()).map(({ blob: _blob, ...rest }) => rest),
   }
 }
 
@@ -244,6 +248,7 @@ export async function importBackup(data: unknown) {
     await db.userPodcasts.bulkPut(b.userPodcasts ?? [])
     await db.audios.bulkPut(b.audios ?? [])
     await db.reviews.bulkPut(b.reviews ?? [])
+    await db.recordings.bulkPut(b.recordings ?? [])
   })
 }
 

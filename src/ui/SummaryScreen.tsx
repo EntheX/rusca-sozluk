@@ -1,3 +1,4 @@
+import { StreakCalendar } from './StreakCalendar'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
 import { db, getThemes } from '../db'
@@ -69,6 +70,7 @@ export function SummaryScreen() {
   return (
     <div>
       <h2>Özet</h2>
+      <StreakCalendar />
       <div className="card">
         <div className="muted small-text">Aktif kullandığın kelime</div>
         <div className="hero">

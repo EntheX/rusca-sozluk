@@ -120,6 +120,21 @@ export interface ReviewRec {
   raw?: string
 }
 
+/** Günlük konuşma kaydı (cihazda kalır, yedeğe ses girmez). */
+export interface RecordingRec {
+  id?: number
+  at: number
+  blob?: Blob
+  mime: string
+  /** saniye */
+  duration: number
+  theme: string
+  /** 0 = Pazartesi … 6 = Pazar */
+  day: number
+  topic: string
+  note: string
+}
+
 export interface AudioRec {
   id?: number
   title: string
@@ -151,6 +166,7 @@ export type DB = Dexie & {
   userPodcasts: EntityTable<UserPodcastRec, 'id'>
   audios: EntityTable<AudioRec, 'id'>
   reviews: EntityTable<ReviewRec, 'id'>
+  recordings: EntityTable<RecordingRec, 'id'>
 }
 
 export const DEMO_KEY = 'rs-demo'
@@ -195,6 +211,9 @@ export function openDb(name: string): DB {
   })
   d.version(4).stores({
     reviews: '++id, textId, at',
+  })
+  d.version(5).stores({
+    recordings: '++id, at',
   })
   return d
 }

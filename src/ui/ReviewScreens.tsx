@@ -4,7 +4,7 @@ import { db, type ReviewRec, type TextRec } from '../db'
 import { buildPrompt, levelValue, parseReview, quickCheck } from '../logic/review'
 import { fmtDate, useMorph } from './hooks'
 
-async function copyText(s: string): Promise<boolean> {
+export async function copyText(s: string): Promise<boolean> {
   try {
     await navigator.clipboard.writeText(s)
     return true
@@ -222,6 +222,7 @@ export function MistakesScreen() {
     return { reviews, texts, last: [...lastByText.values()] }
   }, [])
   const [type, setType] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
   if (!data) return <p className="muted">Yükleniyor…</p>
   const all = data.last.flatMap((r) => r.errors.map((e) => ({ ...e, textId: r.textId, at: r.at })))
   const byType = new Map<string, number>()
@@ -267,6 +268,30 @@ export function MistakesScreen() {
                   <span className="bar-n">{n}</span>
                 </button>
               ))}
+            </div>
+          )}
+          {types.length > 0 && (
+            <div className="card">
+              <div className="small-text muted" style={{ marginBottom: 6 }}>
+                Hatalarından alıştırma: Claude senin gerçek hatalarına benzeyen 10 cümle hazırlar, sen düzeltirsin.
+              </div>
+              <button
+                className="primary full"
+                onClick={async () => {
+                  const t = type ?? types[0][0]
+                  const examples = all.filter((e) => e.type === t).slice(0, 10)
+                  const prompt = `Rusça öğreniyorum (B1, hedef B2). En sık yaptığım hata türü: «${t}». Yazılarımdan örnekler:\n${examples
+                    .map((e) => `- ${e.wrong} → ${e.right}${e.note ? ' (' + e.note + ')' : ''}`)
+                    .join('\n')}\n\nBu hatalara benzeyen, içinde hata olan 10 Rusça cümle yaz. Ben düzelteyim; sonra cevaplarımı kontrol edip kuralı Türkçe kısaca açıkla. Cevapları ben yazmadan verme.`
+                  if (await copyText(prompt)) {
+                    setCopied(true)
+                    window.open('https://claude.ai/new', '_blank', 'noopener')
+                  }
+                }}
+              >
+                Alıştırma iste: {type ?? types[0][0]}
+              </button>
+              {copied && <p className="small-text muted">İstem kopyalandı ✓ Claude'da yeni sohbete yapıştır.</p>}
             </div>
           )}
           {list.length > 0 && (

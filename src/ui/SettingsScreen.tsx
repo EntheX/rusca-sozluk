@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { useRef, useState } from 'react'
 import { getThemes, isDemo, setDemo, setSetting } from '../db'
 import { download, exportBackup, exportCsv, importBackup, renameTheme } from '../logic/store'
+import { ankiDictionary, ankiMistakes, ankiThemes } from '../logic/anki'
 
 export type ThemeMode = 'auto' | 'light' | 'dark'
 export const THEME_KEY = 'rs-theme'
@@ -29,6 +30,7 @@ export function SettingsScreen({ offlineReady }: { offlineReady: boolean }) {
   const [newTheme, setNewTheme] = useState('')
   const [editing, setEditing] = useState<{ from: string; to: string } | null>(null)
   const [msg, setMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null)
+  const [ankiMsg, setAnkiMsg] = useState<{ kind: 'ok' | 'warn'; text: string } | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const changeMode = (m: ThemeMode) => {
@@ -191,6 +193,48 @@ export function SettingsScreen({ offlineReady }: { offlineReady: boolean }) {
           </button>
         </div>
         {msg && <div className={'notice ' + msg.kind}>{msg.text}</div>}
+      </div>
+
+      <div className="card">
+        <h3 style={{ marginTop: 0 }}>Anki'ye aktar</h3>
+        <p className="small-text muted">
+          İndirdiğin .txt dosyasını Anki'de Dosya → İçe aktar ile aç (Android'de AnkiDroid: menü → İçe aktar). Ayırıcı ve etiket sütunu dosyada
+          tanımlı, ayar yapman gerekmez.
+        </p>
+        <div className="stack">
+          <button
+            className="full"
+            onClick={async () => {
+              const r = await ankiDictionary()
+              download(`anki-sozlugum-${stamp()}.txt`, r.text, 'text/plain;charset=utf-8')
+              setAnkiMsg({ kind: 'ok', text: `${r.count} kelime Anki dosyasına yazıldı.` })
+            }}
+          >
+            Sözlüğüm (kendi cümlelerimle)
+          </button>
+          <button
+            className="full"
+            onClick={() => {
+              const r = ankiThemes()
+              download(`anki-tema-kelimeleri-${stamp()}.txt`, r.text, 'text/plain;charset=utf-8')
+              setAnkiMsg({ kind: 'ok', text: `${r.count} tema kelimesi Anki dosyasına yazıldı.` })
+            }}
+          >
+            12 temanın kelimeleri
+          </button>
+          <button
+            className="full"
+            onClick={async () => {
+              const r = await ankiMistakes()
+              if (!r.count) return setAnkiMsg({ kind: 'warn', text: 'Hata defterin boş; önce bir metni Claude ile değerlendir.' })
+              download(`anki-hatalarim-${stamp()}.txt`, r.text, 'text/plain;charset=utf-8')
+              setAnkiMsg({ kind: 'ok', text: `${r.count} hata Anki dosyasına yazıldı.` })
+            }}
+          >
+            Hata defterim
+          </button>
+        </div>
+        {ankiMsg && <div className={'notice ' + ankiMsg.kind}>{ankiMsg.text}</div>}
       </div>
 
       <div className="card">
