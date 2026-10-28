@@ -731,7 +731,7 @@ table.forms th {
 }
 .links {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
 }
 .links a {
@@ -812,7 +812,8 @@ p .rd {
   padding: 4px;
   margin: 8px 0 12px;
 }
-.tabs a {
+.tabs a,
+.tabs button {
   flex: 1;
   text-align: center;
   padding: 10px 6px;
@@ -822,7 +823,13 @@ p .rd {
   font-weight: 600;
   font-size: 0.95rem;
 }
-.tabs a.on {
+.tabs button {
+  background: none;
+  border: none;
+  min-height: 0;
+}
+.tabs a.on,
+.tabs button.on {
   background: var(--surface);
   color: var(--text);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
@@ -1057,4 +1064,49 @@ p .rd {
   width: 100%;
   min-height: 56px;
   font-size: 1.05rem;
+}
+
+/* Telaffuz düğmesi */
+.say {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+  margin-left: 4px;
+  border-radius: 50%;
+  vertical-align: middle;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--border);
+}
+
+/* Tekrar kartları */
+.flashcard {
+  text-align: center;
+}
+.fc-front {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 18px 0 14px;
+  line-height: 1.2;
+}
+.fc-back {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--known-line);
+  margin-bottom: 8px;
+}
+
+/* Günün kelimesi */
+.wotd {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.wotd .word {
+  font-size: 1.6rem;
+  font-weight: 700;
 }

@@ -6,6 +6,7 @@ import type { Morph } from '../morph/morph'
 import { describeGrammemes, POS_LABELS, POS_ORDER, type PosCode } from '../morph/tags'
 import { lemmaHref } from './hooks'
 import { MeaningsEditor } from './Meanings'
+import { Say } from './Say'
 
 export const STATUS_LABELS: Record<AnalyzedToken['status'], string> = {
   known: 'Sözlüğünde var',
@@ -86,6 +87,7 @@ export function TokenSheet({ token, morph, pending, onPending, onChoose, onCorre
           <div>
             <div className="lemma-line">
               <strong>{token.form}</strong> = <strong>{c.lemma}</strong> <span className="badge">{POS_LABELS[c.pos]}</span>
+              <Say text={c.lemma} />
             </div>
             <Tags grammemes={c.grammemes} />
             {(() => {

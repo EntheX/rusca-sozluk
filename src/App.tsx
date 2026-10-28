@@ -14,6 +14,7 @@ import { LibraryScreen, ReaderScreen, StudyScreen } from './ui/ReadScreens'
 import { MistakesScreen } from './ui/ReviewScreens'
 import { ThemeScreen, ThemesScreen } from './ui/ThemeScreen'
 import { SpeakScreen } from './ui/SpeakScreen'
+import { CardsScreen } from './ui/CardsScreen'
 import { SettingsScreen } from './ui/SettingsScreen'
 import { SummaryScreen } from './ui/SummaryScreen'
 import { WriteScreen } from './ui/WriteScreen'
@@ -23,7 +24,7 @@ const NAV = [
   { path: 'yaz', label: 'Yaz', Icon: IconWrite, match: ['yaz', 'tema', 'konus'] },
   { path: 'oku', label: 'Oku', Icon: IconRead, match: ['oku'] },
   { path: 'dinle', label: 'Dinle', Icon: IconHeadphones, match: ['dinle'] },
-  { path: 'sozluk', label: 'Sözlük', Icon: IconBook, match: ['sozluk', 'ogren'] },
+  { path: 'sozluk', label: 'Sözlük', Icon: IconBook, match: ['sozluk', 'ogren', 'tekrar'] },
 ]
 
 export default function App({ offlineReady }: { offlineReady: boolean }) {
@@ -73,6 +74,7 @@ export default function App({ offlineReady }: { offlineReady: boolean }) {
   else if (section === 'tema') screen = parts[1] ? <ThemeScreen key={parts[1]} no={Number(parts[1])} /> : <ThemesScreen />
   else if (section === 'konus')
     screen = <SpeakScreen key={query.toString()} initialTheme={query.get('tema') ?? undefined} initialDay={query.get('gun') != null ? Number(query.get('gun')) : undefined} />
+  else if (section === 'tekrar') screen = <CardsScreen />
   else if (section === 'hatalar') screen = <MistakesScreen />
   else if (section === 'ayarlar') screen = <SettingsScreen offlineReady={offlineReady} />
   else screen = <p>Sayfa bulunamadı.</p>

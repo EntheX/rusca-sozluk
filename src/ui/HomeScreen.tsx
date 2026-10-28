@@ -1,12 +1,14 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { currentBlock, fmtRange } from '../content/calendar'
-import { db } from '../db'
+import { db, lemmaKey } from '../db'
 import { getReadable } from '../logic/library'
 import { IconArchive, IconBook, IconChart, IconCheck, IconHeadphones, IconLayers, IconRead, IconSettings, IconWrite } from './icons'
 import { DAY_NAMES, THEME_PACKS, todayIndex } from '../content/themes'
-import { writeHref } from './ThemeScreen'
+import { isUsed, useActiveKeys, writeHref } from './ThemeScreen'
+import { Say } from './Say'
+import { lemmasOf } from '../content/themes'
 import { useStreak } from './StreakCalendar'
-import { IconMic } from './icons'
+import { IconCards, IconMic } from './icons'
 import { GOAL } from './SummaryScreen'
 
 function greeting() {
@@ -64,6 +66,13 @@ export function HomeScreen() {
   const pack = cb && cb.block.no ? THEME_PACKS[cb.block.no - 1] : undefined
   const dayNo = todayIndex()
   const streak = useStreak()
+  const activeKeys = useActiveKeys()
+  // Günün kelimesi: bu temadan henüz kullanmadığın bir kelime, her gün değişir
+  const wotdPack = pack ?? THEME_PACKS[0]
+  const pool = activeKeys ? wotdPack.words.filter((w) => !isUsed(w, activeKeys)) : []
+  const dayNum = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 86400000)
+  const wotd = pool.length ? pool[(dayNum * 7919) % pool.length] : undefined
+  const wotdSaved = useLiveQuery(async () => (wotd ? !!(await db.study.get(lemmaKey(lemmasOf(wotd)[0], wotd.pos))) : false), [wotd?.ru]) ?? false
   const today = new Date().toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' })
 
   return (
@@ -124,6 +133,35 @@ export function HomeScreen() {
         </div>
       )}
 
+      {wotd && (
+        <div className="card wotd">
+          <div className="muted small-text">Günün kelimesi · {wotdPack.name}</div>
+          <div>
+            <span className="word" lang="ru">
+              {wotd.ru}
+            </span>
+            <Say text={wotd.ru} />
+          </div>
+          <div>{wotd.tr}</div>
+          <div className="small-text muted">Bugünkü metninde ya da konuşmanda kullan; kullanınca yeşile döner.</div>
+          <div className="row" style={{ marginTop: 8 }}>
+            <a className="btn small" href={writeHref(wotdPack.name, dayNo)}>
+              Bununla yaz
+            </a>
+            <button
+              className="small"
+              disabled={wotdSaved}
+              onClick={async () => {
+                const l = lemmasOf(wotd)[0]
+                await db.study.put({ id: lemmaKey(l, wotd.pos), lemma: l, pos: wotd.pos, meanings: [wotd.tr], sentence: '', source: 'Günün kelimesi', addedAt: Date.now() })
+              }}
+            >
+              {wotdSaved ? 'Listede ✓' : 'Öğrenilecekler listesine ekle'}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="tiles">
         <a className="tile" href="#/yaz">
           <IconWrite />
@@ -150,6 +188,16 @@ export function HomeScreen() {
           <strong>Öğrenilecekler</strong>
           <span>{study ? `${study} kelime seni bekliyor` : 'Okurken eklediğin kelimeler'}</span>
         </a>
+        <a className="tile" href="#/tekrar">
+          <IconCards />
+          <strong>Tekrar kartları</strong>
+          <span>Kelimeleri kartlarla, aralıklı tekrarla çalış</span>
+        </a>
+        <a className="tile" href="#/tema">
+          <IconLayers />
+          <strong>Temalar</strong>
+          <span>12 tema, günlük konular ve kelime listeleri</span>
+        </a>
         <a className="tile" href="#/hatalar">
           <IconCheck />
           <strong>Hata defteri</strong>
@@ -166,9 +214,6 @@ export function HomeScreen() {
         </a>
         <a href="#/arsiv">
           <IconArchive /> Arşiv
-        </a>
-        <a href="#/tema">
-          <IconLayers /> Temalar
         </a>
         <a href="#/ayarlar">
           <IconSettings /> Ayarlar

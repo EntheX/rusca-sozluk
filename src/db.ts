@@ -135,6 +135,17 @@ export interface RecordingRec {
   note: string
 }
 
+/** Tekrar kartı ilerlemesi (Leitner kutuları). id = "lemma|tür" */
+export interface CardRec {
+  id: string
+  /** 0 = yeni/bilinmiyor … 6 = iyice oturmuş */
+  box: number
+  due: number
+  reps: number
+  lapses: number
+  lastSeen: number
+}
+
 export interface AudioRec {
   id?: number
   title: string
@@ -167,6 +178,7 @@ export type DB = Dexie & {
   audios: EntityTable<AudioRec, 'id'>
   reviews: EntityTable<ReviewRec, 'id'>
   recordings: EntityTable<RecordingRec, 'id'>
+  cards: EntityTable<CardRec, 'id'>
 }
 
 export const DEMO_KEY = 'rs-demo'
@@ -214,6 +226,9 @@ export function openDb(name: string): DB {
   })
   d.version(5).stores({
     recordings: '++id, at',
+  })
+  d.version(6).stores({
+    cards: 'id, due',
   })
   return d
 }

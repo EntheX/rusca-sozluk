@@ -3,13 +3,14 @@ import { useState } from 'react'
 import { currentBlock } from '../content/calendar'
 import { DAY_NAMES, DAY_SHORT, THEME_PACKS, lemmasOf, todayIndex, type ThemePack, type ThemeWord, type WordPos } from '../content/themes'
 import { db, lemmaKey } from '../db'
+import { Say } from './Say'
 
 const POS_TITLES: Record<WordPos, string> = { verb: 'Fiiller', adj: 'Sıfatlar', adv: 'Zarflar' }
 
 /** Sözlükte (aktif) kullanılan lemma anahtarları */
-const useActiveKeys = () => useLiveQuery(async () => new Set((await db.lemmas.where('useCount').above(0).primaryKeys()) as string[]), [])
+export const useActiveKeys = () => useLiveQuery(async () => new Set((await db.lemmas.where('useCount').above(0).primaryKeys()) as string[]), [])
 
-const isUsed = (w: ThemeWord, keys: Set<string>) => lemmasOf(w).some((l) => keys.has(lemmaKey(l, w.pos)))
+export const isUsed = (w: ThemeWord, keys: Set<string>) => lemmasOf(w).some((l) => keys.has(lemmaKey(l, w.pos)))
 
 export const writeHref = (theme: string, day?: number) =>
   '#/yaz?tema=' + encodeURIComponent(theme) + (day != null ? '&gun=' + day : '')
@@ -108,6 +109,7 @@ export function ThemeScreen({ no }: { no: number }) {
                 return (
                   <li key={w.ru} className={u ? 'used' : ''}>
                     <span lang="ru">{w.ru}</span>
+                    <Say text={w.ru} />
                     <span className="muted"> — {w.tr}</span>
                     {u && <span aria-label="kullanıldı"> ✓</span>}
                   </li>
@@ -163,6 +165,7 @@ export function DayCard({ pack, day, compact }: { pack: ThemePack; day: number; 
           return (
             <li key={p}>
               <span lang="ru">{ru}</span>
+              <Say text={ru.replace(/…/g, '')} />
               {tr && <span className="muted"> — {tr}</span>}
             </li>
           )

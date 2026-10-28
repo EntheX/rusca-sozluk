@@ -7,6 +7,7 @@ import { setMeanings } from '../logic/store'
 import { fmtDate, lemmaHref, useMorph } from './hooks'
 import { MeaningsEditor } from './Meanings'
 import { SozlukTabs } from './ReadScreens'
+import { Say } from './Say'
 
 type Sort = 'alpha' | 'newest' | 'recent' | 'count'
 type Period = 'all' | '7' | '30' | '90' | '365'
@@ -173,7 +174,7 @@ export function LemmaDetail({ id }: { id: string }) {
         <a href="#/sozluk">← Sözlük</a>
       </p>
       <h2 lang="ru" style={{ fontSize: '1.8rem', marginBottom: 4 }}>
-        {lemma.lemma} <span className="badge">{POS_LABELS[lemma.pos]}</span>
+        {lemma.lemma} <Say text={lemma.lemma} /> <span className="badge">{POS_LABELS[lemma.pos]}</span>
         {lemma.custom && <span className="badge">elle eklendi</span>}
       </h2>
       <p className="small-text muted">

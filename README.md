@@ -45,7 +45,9 @@ Ayarlar ekranının altında «✓ Çevrimdışı kullanıma hazır» yazıyorsa
 12. **Seri takvimi** (Özet): son 12 haftada metin yazdığın, konuştuğun ya da podcast dinlediğin günler ve üst üste kaç gün çalıştığın.
 13. **Hata defterinden alıştırma:** en sık hata türün için Claude'dan senin hatalarına benzeyen 10 cümlelik alıştırma iste.
 14. **Anki'ye aktar** (Ayarlar): sözlüğün (kendi cümlelerinle), 12 temanın kelimeleri ya da hata defterin; Anki/AnkiDroid'de Dosya → İçe aktar.
-15. **Ayarlar:** açık/koyu tema, tema listesini düzenleme, JSON yedek/geri yükleme, CSV dışa aktarma, demo modu.
+15. **Tekrar kartları:** öğrenilecekler listesi, tema kelimeleri ya da anlamı yazılmış sözlük kelimelerin için kart çalışma. Bildiğin kart 1, 2, 4, 8, 16, 32 gün arayla gelir (Leitner kutuları), bilmediğin aynı oturumda tekrar gelir. Türkçeden Rusçaya da sorabilir.
+16. **Sesli telaffuz ve günün kelimesi:** kelimelerin ve kalıpların yanındaki hoparlör düğmesi cihazın Rusça sesiyle okur (Windows/Android'de Rusça ses paketi gerekebilir). Ana sayfadaki günün kelimesi o haftanın temasından henüz kullanmadığın bir kelimedir ve her gün değişir.
+17. **Ayarlar:** açık/koyu tema, tema listesini düzenleme, JSON yedek/geri yükleme, CSV dışa aktarma, demo modu.
 
 **Demo modu:** Ayarlar → Demo modunu aç. Ayrı bir veritabanında 4 örnek metin hazırlanır ve «Я родился и вырос в небольшом городе на юге Турции. В итоге я поступил в колледж.» metni çözümlenmiş olarak açılır. Sarı ve kırmızı kelime örneği için Arşiv'deki «Örnek» taslağını aç. Gerçek verine dokunmaz.
 

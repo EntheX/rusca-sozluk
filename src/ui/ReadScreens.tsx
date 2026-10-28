@@ -9,6 +9,7 @@ import { describeGrammemes, POS_LABELS } from '../morph/tags'
 import { go, lemmaHref, useMorph } from './hooks'
 import { MeaningsEditor } from './Meanings'
 import { Tags } from './TokenSheet'
+import { Say } from './Say'
 
 /* ---------- Kütüphane ---------- */
 
@@ -384,7 +385,7 @@ function ReaderSheet({
       <div className="sheet" role="dialog" aria-label={`«${token.text}» kelimesi`} onClick={(e) => e.stopPropagation()}>
         <div className="sheet-head">
           <div className="form" lang="ru">
-            {token.text}
+            {token.text} <Say text={token.text} />
           </div>
           <button className="small" onClick={onClose}>
             Kapat
@@ -467,7 +468,7 @@ export function StudyScreen() {
     <div>
       <SozlukTabs current="ogren" />
       <p className="small-text muted">
-        Okurken eklediğin kelimeler. Bir yazında kullandığında «kullandıkların» kısmına geçer ve aktif sözlüğünde sayılır.
+        Okurken eklediğin kelimeler. Bir yazında kullandığında «kullandıkların» kısmına geçer ve aktif sözlüğünde sayılır. <a href="#/tekrar">Kartlarla çalış →</a>
       </p>
       <div className="row" style={{ marginBottom: 10 }}>
         <button className={showUsed ? '' : 'primary'} onClick={() => setShowUsed(false)}>
@@ -487,7 +488,7 @@ export function StudyScreen() {
             <div key={s.id} className="sentence">
               <div className="row" style={{ justifyContent: 'space-between' }}>
                 <div>
-                  <strong lang="ru">{s.lemma}</strong> <span className="badge">{POS_LABELS[s.pos]}</span>{' '}
+                  <strong lang="ru">{s.lemma}</strong> <Say text={s.lemma} /> <span className="badge">{POS_LABELS[s.pos]}</span>{' '}
                   {used.has(s.id) && <a href={lemmaHref(s.id)} className="small-text">sözlükte aç</a>}
                 </div>
                 <button className="small" onClick={() => db.study.delete(s.id)} aria-label={`${s.lemma} sil`}>
