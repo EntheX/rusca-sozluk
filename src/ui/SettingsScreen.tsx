@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useRef, useState } from 'react'
-import { DEMO_KEY, getThemes, isDemo, setSetting } from '../db'
+import { getThemes, isDemo, setDemo, setSetting } from '../db'
 import { download, exportBackup, exportCsv, importBackup, renameTheme } from '../logic/store'
 
 export type ThemeMode = 'auto' | 'light' | 'dark'
@@ -74,16 +74,7 @@ export function SettingsScreen({ offlineReady }: { offlineReady: boolean }) {
     }
   }
 
-  const toggleDemo = () => {
-    try {
-      if (isDemo()) localStorage.removeItem(DEMO_KEY)
-      else localStorage.setItem(DEMO_KEY, '1')
-    } catch {
-      return
-    }
-    location.hash = isDemo() ? '#/yaz?demo=1' : '#/yaz'
-    location.reload()
-  }
+  const toggleDemo = () => setDemo(!isDemo())
 
   return (
     <div>

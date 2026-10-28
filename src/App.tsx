@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { isDemo } from './db'
+import { isDemo, setDemo } from './db'
 import { seedDemo } from './logic/demo'
 import { loadMorph } from './morph/loadMorph'
 import { ArchiveScreen, TextView } from './ui/ArchiveScreen'
@@ -69,7 +69,10 @@ export default function App({ offlineReady }: { offlineReady: boolean }) {
         {isDemo() && (
           <div className="demo-banner">
             <strong>Demo modu.</strong> Örnek verilerle çalışıyorsun; gerçek sözlüğün etkilenmez. Sarı ve kırmızı örnek için{' '}
-            <a href="#/arsiv">Arşiv</a>'deki «Örnek» taslağını aç. <a href="#/ayarlar">Demodan çık</a>
+            <a href="#/arsiv">Arşiv</a>'deki «Örnek» taslağını aç.{' '}
+            <button className="small" onClick={() => setDemo(false)}>
+              Demodan çık
+            </button>
           </div>
         )}
         <main>{screen}</main>

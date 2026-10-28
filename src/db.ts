@@ -69,6 +69,18 @@ export function isDemo(): boolean {
   }
 }
 
+/** Demo modunu aç/kapat: ayrı veritabanına geçmek için sayfa yeniden yüklenir. */
+export function setDemo(on: boolean) {
+  try {
+    if (on) localStorage.setItem(DEMO_KEY, '1')
+    else localStorage.removeItem(DEMO_KEY)
+  } catch {
+    return
+  }
+  location.replace(location.pathname + (on ? '#/yaz?demo=1' : '#/yaz'))
+  location.reload()
+}
+
 export function openDb(name: string): DB {
   const d = new Dexie(name) as DB
   d.version(1).stores({
