@@ -51,7 +51,9 @@ Ayarlar ekranının altında «✓ Çevrimdışı kullanıma hazır» yazıyorsa
 18. **Dikte:** kendi metinlerinden ya da okuma metinlerinden bir cümle sesli okunur (normal/yavaş), sen yazarsın; doğru, yanlış, eksik ve fazla kelimeler gösterilir.
 19. **Gölgeleme:** yüklediğin ses dosyasında bir bölümü (A-B ya da «son 5 sn») döngüye al; istersen her tekrardan sonra senin söylemen için bölüm kadar bekler.
 20. **ТРКИ-2 yazma görevleri:** sınavın yazma bölümüne benzer 12 görev (gayriresmî mektup, resmî yazı/dilekçe, görüş yazısı). Süre tutulur, kelime sayısı hedefle karşılaştırılır; bitirince metin çözümlenir ve Claude değerlendirmesi görevi ve ТРКИ-2 ölçütlerini de içerir.
-21. **Ayarlar:** açık/koyu tema, tema listesini düzenleme, JSON yedek/geri yükleme, CSV dışa aktarma, demo modu.
+21. **Gramer:** B1→B2 için 12 konu (hâller ve edatlar, görünüş, hareket fiilleri, çekim, который, şart kipi, ortaçlar, zarf-fiiller, sayılar, dönüşlü fiiller, karşılaştırma, emir kipi): Türkçe açıklama, tablolar, sesli örnekler. 9 konuda otomatik alıştırma var: sorular senin metinlerinden, okuma metinlerinden ve konu örneklerinden üretilir, yanlış seçenekler morfoloji sözlüğünden gelir. Her temanın haftalık bir gramer hedefi var; hızlı kontrol metninde o yapıyı kaç kez kullandığını sayar. Hata defteri en sık hata türünü ilgili konuya ve alıştırmaya bağlar.
+22. **Seviye testleri (A1 → C1):** ТРКИ «Лексика. Грамматика» bölümüne benzer 20 soruluk mini denemeler (resmî sınav soruları değil). Süre tutulur, geçme sınırı %66; sonuçta her sorunun açıklaması ve tekrar etmen gereken gramer konuları çıkar.
+23. **Ayarlar:** açık/koyu tema, tema listesini düzenleme, JSON yedek/geri yükleme, CSV dışa aktarma, demo modu.
 
 **Demo modu:** Ayarlar → Demo modunu aç. Ayrı bir veritabanında 4 örnek metin hazırlanır ve «Я родился и вырос в небольшом городе на юге Турции. В итоге я поступил в колледж.» metni çözümlenmiş olarak açılır. Sarı ve kırmızı kelime örneği için Arşiv'deki «Örnek» taslağını aç. Gerçek verine dokunmaz.
 

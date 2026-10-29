@@ -2,7 +2,8 @@
 
 import type { ReviewRec, TextRec } from '../db'
 import { taskById } from '../content/trki'
-import { lemmasOf, packByName } from '../content/themes'
+import { THEME_PACKS, lemmasOf, packByName } from '../content/themes'
+import { THEME_GRAMMAR, topicById } from '../content/grammar'
 import type { Morph } from '../morph/morph'
 import { splitSentences, tokenize } from '../morph/tokenize'
 
@@ -32,11 +33,18 @@ export interface QuickCheck {
   /** Tema listesinden kullanılan kelimeler */
   themeUsed: string[]
   themeTotal: number
+  /** Temanın haftalık gramer hedefi ve metinde kaç kez kullanıldığı */
+  grammar?: { topicId: string; title: string; goal: string; count: number; target: number }
 }
 
 export function quickCheck(body: string, theme: string, morph: Morph): QuickCheck {
   const tokens = tokenize(body)
   const lemmas = new Set<string>()
+  const themeNo = THEME_PACKS.findIndex((p) => p.name === theme)
+  const goal = themeNo >= 0 ? THEME_GRAMMAR[themeNo] : undefined
+  const topic = goal ? topicById(goal.topic) : undefined
+  const detect = topic?.detect
+  let used = 0
   const unknown = new Set<string>()
   for (const t of tokens) {
     const a = morph.analyze(t.text)
@@ -46,6 +54,8 @@ export function quickCheck(body: string, theme: string, morph: Morph): QuickChec
       continue
     }
     for (const c of a.candidates) lemmas.add(c.lemma)
+    const top = a.candidates[0]
+    if (detect && top && (detect.any?.some((g) => top.grammemes.includes(g)) || detect.lemmas?.includes(top.lemma))) used++
   }
   const sentences = splitSentences(body).filter((s) => /[а-яё]/i.test(s.text)).length || 1
   const pack = packByName(theme)
@@ -58,6 +68,7 @@ export function quickCheck(body: string, theme: string, morph: Morph): QuickChec
     unknown: [...unknown],
     themeUsed,
     themeTotal: pack?.words.length ?? 0,
+    grammar: goal && topic ? { topicId: topic.id, title: topic.title, goal: goal.goal, count: detect ? used : -1, target: goal.target } : undefined,
   }
 }
 

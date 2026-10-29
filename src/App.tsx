@@ -19,6 +19,8 @@ import { ParadigmScreen } from './ui/Paradigm'
 import type { PosCode } from './morph/tags'
 import { DictationScreen } from './ui/DictationScreen'
 import { TrkiScreen, TrkiTask } from './ui/TrkiScreen'
+import { DrillScreen, GrammarScreen, TopicScreen } from './ui/GrammarScreens'
+import { LevelTestScreen } from './ui/LevelTestScreen'
 import { SettingsScreen } from './ui/SettingsScreen'
 import { SummaryScreen } from './ui/SummaryScreen'
 import { WriteScreen } from './ui/WriteScreen'
@@ -28,7 +30,7 @@ const NAV = [
   { path: 'yaz', label: 'Yaz', Icon: IconWrite, match: ['yaz', 'tema', 'konus', 'trki'] },
   { path: 'oku', label: 'Oku', Icon: IconRead, match: ['oku'] },
   { path: 'dinle', label: 'Dinle', Icon: IconHeadphones, match: ['dinle', 'dikte'] },
-  { path: 'sozluk', label: 'Sözlük', Icon: IconBook, match: ['sozluk', 'ogren', 'tekrar'] },
+  { path: 'sozluk', label: 'Sözlük', Icon: IconBook, match: ['sozluk', 'ogren', 'tekrar', 'gramer', 'test'] },
 ]
 
 export default function App({ offlineReady }: { offlineReady: boolean }) {
@@ -81,6 +83,9 @@ export default function App({ offlineReady }: { offlineReady: boolean }) {
   else if (section === 'cekim') screen = <ParadigmScreen key={query.toString()} word={query.get('w') ?? ''} pos={(query.get('p') ?? 'verb') as PosCode} />
   else if (section === 'dikte') screen = <DictationScreen />
   else if (section === 'trki') screen = parts[1] ? <TrkiTask key={parts[1]} id={parts[1]} /> : <TrkiScreen />
+  else if (section === 'gramer')
+    screen = !parts[1] ? <GrammarScreen /> : parts[2] === 'alistirma' ? <DrillScreen key={parts[1]} id={parts[1]} /> : <TopicScreen key={parts[1]} id={parts[1]} />
+  else if (section === 'test') screen = <LevelTestScreen key={parts[1]} level={parts[1] ?? 'A1'} />
   else if (section === 'tekrar') screen = <CardsScreen />
   else if (section === 'hatalar') screen = <MistakesScreen />
   else if (section === 'ayarlar') screen = <SettingsScreen offlineReady={offlineReady} />

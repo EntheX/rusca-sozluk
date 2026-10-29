@@ -43,3 +43,6 @@ export const IconEar = () => (
 export const IconExam = () => (
   <svg viewBox="0 0 24 24" {...P}><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z" /><path d="M14 3v6h6" /><path d="M8 13h8" /><path d="M8 17h5" /></svg>
 )
+export const IconGrammar = () => (
+  <svg viewBox="0 0 24 24" {...P}><path d="M4 7V5h16v2" /><path d="M12 5v14" /><path d="M9 19h6" /></svg>
+)

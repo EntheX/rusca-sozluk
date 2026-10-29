@@ -8,7 +8,7 @@ import { isUsed, useActiveKeys, writeHref } from './ThemeScreen'
 import { Say } from './Say'
 import { lemmasOf } from '../content/themes'
 import { useStreak } from './StreakCalendar'
-import { IconCards, IconEar, IconExam, IconMic } from './icons'
+import { IconCards, IconEar, IconExam, IconGrammar, IconMic } from './icons'
 import { GOAL } from './SummaryScreen'
 
 function greeting() {
@@ -187,6 +187,11 @@ export function HomeScreen() {
           <IconBook />
           <strong>Öğrenilecekler</strong>
           <span>{study ? `${study} kelime seni bekliyor` : 'Okurken eklediğin kelimeler'}</span>
+        </a>
+        <a className="tile" href="#/gramer">
+          <IconGrammar />
+          <strong>Gramer</strong>
+          <span>Konular, alıştırmalar ve A1–C1 seviye testleri</span>
         </a>
         <a className="tile" href="#/tekrar">
           <IconCards />

@@ -69,6 +69,7 @@ export function analyzeBody(body: string, morph: Morph, ctx: AnalyzeContext): An
   const cache = new Map<string, WordAnalysis>()
   const cached: Morph = {
     paradigm: morph.paradigm,
+    distractors: morph.distractors,
     analyze: (w) => {
       let a = cache.get(w)
       if (!a) {

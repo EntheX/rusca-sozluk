@@ -19,6 +19,7 @@ import {
   type ReviewRec,
   type RecordingRec,
   type CardRec,
+  type TestResultRec,
 } from '../db'
 import type { AnalyzedToken } from './analyze'
 import { POS_LABELS } from '../morph/tags'
@@ -210,9 +211,10 @@ export interface Backup {
   /** Kayıtların sesi yedeğe girmez; tarih ve konu girer (seri takvimi için). */
   recordings?: RecordingRec[]
   cards?: CardRec[]
+  testResults?: TestResultRec[]
 }
 
-const ALL_TABLES = () => [db.texts, db.lemmas, db.usages, db.settings, db.books, db.progress, db.study, db.podcastLogs, db.userPodcasts, db.audios, db.reviews, db.recordings, db.cards]
+const ALL_TABLES = () => [db.texts, db.lemmas, db.usages, db.settings, db.books, db.progress, db.study, db.podcastLogs, db.userPodcasts, db.audios, db.reviews, db.recordings, db.cards, db.testResults]
 
 export async function exportBackup(): Promise<Backup> {
   return {
@@ -232,6 +234,7 @@ export async function exportBackup(): Promise<Backup> {
     reviews: await db.reviews.toArray(),
     recordings: (await db.recordings.toArray()).map(({ blob: _blob, ...rest }) => rest),
     cards: await db.cards.toArray(),
+    testResults: await db.testResults.toArray(),
   }
 }
 
@@ -256,6 +259,7 @@ export async function importBackup(data: unknown) {
     await db.reviews.bulkPut(b.reviews ?? [])
     await db.recordings.bulkPut(b.recordings ?? [])
     await db.cards.bulkPut(b.cards ?? [])
+    await db.testResults.bulkPut(b.testResults ?? [])
   })
 }
 

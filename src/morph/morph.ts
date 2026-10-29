@@ -32,6 +32,8 @@ export interface Morph {
   suggest(word: string): string[]
   /** Sözlük halinden çekim tabloları (fiil, isim, sıfat); yoksa boş dizi. */
   paradigm(lemma: string, pos: PosCode): ParadigmTable[]
+  /** Aynı lemmanın başka formları (alıştırmada yanlış seçenek olarak). */
+  distractors(word: string, lemma: string): string[]
 }
 
 export interface ParadigmTable {
@@ -312,5 +314,38 @@ export function createMorph(Az: AzLike): Morph {
     return tables
   }
 
-  return { analyze, suggest, paradigm }
+  function distractors(word: string, lemma: string): string[] {
+    const form = cleanWord(word)
+    const parse = caseParses(form, word).find((x) => foldYo(String(x.normalize().word)) === foldYo(cleanWord(lemma)))
+    if (!parse) return []
+    const g = grammemesOf(parse.tag)
+    const CASES = ['nomn', 'gent', 'datv', 'accs', 'ablt', 'loct']
+    let tags: string[][] = []
+    if (g[0] === 'NOUN') tags = CASES.flatMap((c) => [[c, 'sing'], [c, 'plur']])
+    else if (['ADJF', 'PRTF'].includes(g[0])) tags = CASES.flatMap((c) => ['masc', 'femn', 'neut', 'plur'].map((x) => [c, x]))
+    else if (['VERB', 'INFN', 'GRND', 'PRTS'].includes(g[0])) {
+      // Fiilin mastar parse'ından: şahıslar, geçmiş, emir, mastar, zarf-fiil
+      const inf = caseParses(cleanWord(lemma), lemma).find((x) => grammemesOf(x.tag)[0] === 'INFN') ?? parse
+      const t = grammemesOf(inf.tag).includes('perf') ? 'futr' : 'pres'
+      const verbTags = [
+        [t, '1per', 'sing'], [t, '2per', 'sing'], [t, '3per', 'sing'], [t, '1per', 'plur'], [t, '3per', 'plur'],
+        ['past', 'masc'], ['past', 'femn'], ['past', 'plur'], ['impr', 'sing', 'excl'], ['GRND'], ['INFN'],
+      ]
+      const out = new Set<string>()
+      for (const tg of verbTags) {
+        const r = inf.inflect(tg)
+        if (r && r.word) out.add(String(r.word))
+      }
+      out.add(String(inf.word))
+      return [...out].filter((w) => foldYo(w) !== foldYo(form))
+    }
+    const out = new Set<string>()
+    for (const tg of tags) {
+      const r = parse.inflect(tg)
+      if (r && r.word) out.add(String(r.word))
+    }
+    return [...out].filter((w) => foldYo(w) !== foldYo(form))
+  }
+
+  return { analyze, suggest, paradigm, distractors }
 }

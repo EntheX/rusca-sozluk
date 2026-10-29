@@ -1190,3 +1190,118 @@ details.card[open] > summary {
 .trki-time.over {
   color: var(--unk-line);
 }
+.ok-text {
+  color: var(--known-line);
+}
+
+/* Gramer ve testler */
+.level-tests {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+.level-test {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 4px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  background: var(--surface);
+}
+.level-test strong {
+  font-size: 1.1rem;
+}
+.level-test span {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.level-test.passed {
+  border-color: var(--known-line);
+  background: var(--known-bg);
+}
+.table-scroll {
+  overflow-x: auto;
+  margin-bottom: 8px;
+}
+.grammar-section td {
+  vertical-align: top;
+}
+.drill-sentence {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  margin-top: 0;
+}
+.blank {
+  display: inline-block;
+  min-width: 70px;
+  padding: 0 6px;
+  border-bottom: 2px solid var(--accent);
+  font-weight: 600;
+  text-align: center;
+}
+.blank.ok {
+  color: var(--known-line);
+  border-color: var(--known-line);
+}
+.blank.bad {
+  color: var(--unk-line);
+  border-color: var(--unk-line);
+}
+.choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 10px 0;
+}
+.choice {
+  text-align: left;
+  min-height: 52px;
+}
+.choice.ok {
+  background: var(--known-bg);
+  border-color: var(--known-line);
+}
+.choice.bad {
+  background: var(--unk-bg);
+  border-color: var(--unk-line);
+}
+.choice.picked {
+  border-color: var(--accent);
+  background: var(--new-bg);
+}
+.choice .letter {
+  display: inline-block;
+  width: 1.4em;
+  font-weight: 700;
+  color: var(--accent);
+}
+.q-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 12px;
+}
+.q-dots button {
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
+  font-size: 0.8rem;
+}
+.q-dots button.done {
+  background: var(--new-bg);
+}
+.q-dots button.on {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+.test-review.wrong {
+  border-color: var(--unk-line);
+}
+.choice:disabled {
+  opacity: 1;
+  color: var(--text);
+}

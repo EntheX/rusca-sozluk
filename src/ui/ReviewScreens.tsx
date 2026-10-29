@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import { db, type ReviewRec, type TextRec } from '../db'
 import { buildPrompt, levelValue, parseReview, quickCheck } from '../logic/review'
 import { fmtDate, useMorph } from './hooks'
+import { GRAMMAR } from '../content/grammar'
 
 export async function copyText(s: string): Promise<boolean> {
   try {
@@ -87,6 +88,20 @@ function QuickCheckCard({ text }: { text: TextRec }) {
       ) : (
         <p className="small-text muted" style={{ marginBottom: 0 }}>
           Bütün kelimeler morfoloji sözlüğünde var; yazım hatası görünmüyor. Dilbilgisi hataları için Claude değerlendirmesini kullan.
+        </p>
+      )}
+      {q.grammar && (
+        <p className="small-text" style={{ marginBottom: 0 }}>
+          Bu temanın gramer hedefi: <a href={'#/gramer/' + q.grammar.topicId}>{q.grammar.title}</a> · {q.grammar.goal}
+          {q.grammar.count >= 0 && (
+            <>
+              {' '}
+              ·{' '}
+              <strong className={q.grammar.count >= Math.max(1, q.grammar.target) ? 'ok-text' : ''}>
+                metninde {q.grammar.count} kez{q.grammar.target ? ` / hedef ${q.grammar.target}` : ''}
+              </strong>
+            </>
+          )}
         </p>
       )}
       {q.avgSentence > 0 && q.avgSentence < 6 && q.words > 20 && (
@@ -268,6 +283,21 @@ export function MistakesScreen() {
                   <span className="bar-n">{n}</span>
                 </button>
               ))}
+              {(() => {
+                const t = type ?? types[0][0]
+                const topic = GRAMMAR.find((g) => g.errorTypes[0] === t) ?? GRAMMAR.find((g) => g.errorTypes.includes(t))
+                return topic ? (
+                  <p className="small-text" style={{ marginBottom: 0 }}>
+                    «{t}» için konu: <a href={'#/gramer/' + topic.id}>{topic.title}</a>
+                    {topic.drill && (
+                      <>
+                        {' · '}
+                        <a href={'#/gramer/' + topic.id + '/alistirma'}>otomatik alıştırma</a>
+                      </>
+                    )}
+                  </p>
+                ) : null
+              })()}
             </div>
           )}
           {types.length > 0 && (

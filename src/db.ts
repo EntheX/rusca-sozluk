@@ -148,6 +148,18 @@ export interface CardRec {
   lastSeen: number
 }
 
+/** Seviye testi sonucu */
+export interface TestResultRec {
+  id?: number
+  level: string
+  at: number
+  correct: number
+  total: number
+  seconds: number
+  /** Her sorunun seçilen cevabı (-1 = boş) */
+  answers: number[]
+}
+
 export interface AudioRec {
   id?: number
   title: string
@@ -181,6 +193,7 @@ export type DB = Dexie & {
   reviews: EntityTable<ReviewRec, 'id'>
   recordings: EntityTable<RecordingRec, 'id'>
   cards: EntityTable<CardRec, 'id'>
+  testResults: EntityTable<TestResultRec, 'id'>
 }
 
 export const DEMO_KEY = 'rs-demo'
@@ -231,6 +244,9 @@ export function openDb(name: string): DB {
   })
   d.version(6).stores({
     cards: 'id, due',
+  })
+  d.version(7).stores({
+    testResults: '++id, level, at',
   })
   return d
 }
